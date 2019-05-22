@@ -1,8 +1,13 @@
+import os
+from config import globalconfig
+globalconfig.run()
+
 from networks import TwoLayerFC
 from networks import ThreeLayerConvNet
 from networks import LinearReLU
 from DataUtils import cifar10
 from tools import train_and_check as mtool
+
 
 import torch
 import torch.nn as nn
@@ -10,7 +15,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
 
-writer = SummaryWriter(log_dir='/data0/jianfei/tensorboard-log')
+writer = SummaryWriter(log_dir=os.environ['logdir'])
 
 train_dataloader, val_dataloader, test_dataloader = cifar10.getdata()
 

@@ -7,9 +7,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="7"
-
 train_dataloader, val_dataloader, test_dataloader = cifar10.getdata()
 
 model = nn.Sequential(

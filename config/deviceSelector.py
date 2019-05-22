@@ -23,5 +23,9 @@ def get_gpus():
 def get_gpu_choice():
   gpus = get_gpus()
   r = sorted(gpus, lambda v: v['mem']*100+v['usage'])[0]
+  if r['mem'] >= 50:
+    print('###############################################################################')
+    print('Warning: The best gpu now is in high load! Please check and use another server!')
+    print('###############################################################################')
   print ('Recommended gpu is: gpu%d, mem: %d%%, usage: %d%%' % (r['index'], r['mem'], r['usage']))
   return r['index']
