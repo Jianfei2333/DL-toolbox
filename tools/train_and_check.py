@@ -3,7 +3,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
 
-writer = SummaryWriter()
+writer = SummaryWriter(log_dir='/data0/jianfei/tensorboard-log/')
 
 def checkAcc(loader, model):
   """
@@ -22,7 +22,7 @@ def checkAcc(loader, model):
     print('Checking accuracy on test set.')
 
   if torch.cuda.is_available(): 
-    device = torch.device('cuda')
+    device = torch.device('cuda:7')
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = '7'
   else:
@@ -60,7 +60,7 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
     print ('Training on device: gpu7')
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = '7'
-    device = torch.device('cuda')
+    device = torch.device('cuda:7')
   else:
     print ('Training on device: cpu')
     device = torch.device('cpu')

@@ -10,7 +10,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
 
-writer = SummaryWriter()
+writer = SummaryWriter(log_dir='/data0/jianfei/tensorboard-log')
 
 train_dataloader, val_dataloader, test_dataloader = cifar10.getdata()
 
