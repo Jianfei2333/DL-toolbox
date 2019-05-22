@@ -1,7 +1,9 @@
 import os
 user = os.popen('whoami').readline()
 
-import config.device_selector as d
+import sys
+sys.path.append('..')
+import device_selector as d
 
 if user.find('jianfei') == -1:
   os.environ['where_am_i'] = 'pc'
