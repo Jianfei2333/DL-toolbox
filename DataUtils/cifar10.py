@@ -28,6 +28,6 @@ def getdata():
   cifar10_test = dset.CIFAR10(DATAPATH, train=True, download=True, transform=transform)
   test_dataloader = DataLoader(cifar10_test, batch_size=64)
 
-  print ("Collect data complete!")
+  print ("Collect data complete!\n")
 
   return (train_dataloader, val_dataloader, test_dataloader)
