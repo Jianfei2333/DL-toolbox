@@ -13,8 +13,8 @@ class Model(nn.Module):
   """
   Deep residual network building block.
   Structure:
-    x - Conv - Conv - Add
-    |------------------|
+    x - Conv - ReLU - Conv - Add - ReLU
+    |-------------------------------|
 
   Attributes:
     in_channel: The number of channels in input.
@@ -32,14 +32,17 @@ class Model(nn.Module):
     nn.init.kaiming_normal_(self.conv1.weight)
     nn.init.constant_(self.conv1.bias, 0)
 
+    self.bn1 = nn.BatchNorm2d(out_channel)
+    self.bn2 = nn.BatchNorm2d(out_channel)
+
     self.conv2 = nn.Conv2d(out_channel, out_channel, (3,3), stride=1, padding=1)
     nn.init.kaiming_normal_(self.conv2.weight)
     nn.init.constant_(self.conv2.bias, 0)
 
   def forward(self, x):
 
-    a = F.relu(self.conv1(x))
-    b = self.conv2(a)
+    a = F.relu(self.bn1(self.conv1(x)))
+    b = self.bn2(self.conv2(a))
     if self.downsample:
       shortcut = self.conv_shortcut(x)
     else:
