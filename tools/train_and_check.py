@@ -1,5 +1,10 @@
 import torch
 
+from torch.utils.tensorboard import SummaryWriter
+import torchvision
+
+writer = SummaryWriter()
+
 def checkAcc(loader, model):
   """
   Check the accuracy of the model on validation set / test set.
@@ -61,6 +66,7 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
     device = torch.device('cpu')
 
   model = model.to(device=device)
+  step = 1
   for e in range(epochs):
     for t, (x, y) in enumerate(train_dataloader):
       model.train()
@@ -69,6 +75,9 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
 
       scores = model(x)
       loss = torch.nn.functional.cross_entropy(scores, y)
+
+      writer.add_scalars('loss',{'loss': loss.item()}, step)
+      step += 1
 
       optimizer.zero_grad()
 

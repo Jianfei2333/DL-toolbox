@@ -7,6 +7,10 @@ from tools import train_and_check as mtool
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
+import torchvision
+
+writer = SummaryWriter()
 
 train_dataloader, val_dataloader, test_dataloader = cifar10.getdata()
 
@@ -23,5 +27,11 @@ model = nn.Sequential(
 # 创建优化器
 optimizer = optim.SGD(model.parameters(), lr=1e-2)
 
+images, labels = next(iter(train_dataloader))
+
+grid = torchvision.utils.make_grid(images)
+writer.add_text('seq', 'This is a sequential network.', 0)
+writer.close()
+
 # 调用训练函数
-mtool.train(model, optimizer, train_dataloader, val_dataloader)
+mtool.train(model, optimizer, train_dataloader, val_dataloader, 10)
