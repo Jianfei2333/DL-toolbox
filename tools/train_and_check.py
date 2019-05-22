@@ -19,7 +19,7 @@ def checkAcc(loader, model):
   if torch.cuda.is_available(): 
     device = torch.device('cuda')
     import os
-    os.environ["CUDA_VISIBLE_DEVICES"] = 7
+    os.environ["CUDA_VISIBLE_DEVICES"] = '7'
   else:
     device = torch.device('cpu')
 
@@ -52,7 +52,9 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
     Nothing, but prints model accuracies during training.
   """
   if torch.cuda.is_available():
-    print ('Training on device: gpu')
+    print ('Training on device: gpu7')
+    import os
+    os.environ["CUDA_VISIBLE_DEVICES"] = '7'
     device = torch.device('cuda')
   else:
     print ('Training on device: cpu')
