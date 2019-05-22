@@ -34,4 +34,5 @@ model = nn.Sequential(
 
 optimizer = optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
 
-mtool.train(model, optimizer, train_dataloader, val_dataloader)
+mtool.train(model, optimizer, train_dataloader, val_dataloader, 10)
+
