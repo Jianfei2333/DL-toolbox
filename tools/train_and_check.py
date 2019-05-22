@@ -18,6 +18,8 @@ def checkAcc(loader, model):
 
   if torch.cuda.is_available(): 
     device = torch.device('cuda')
+    import os
+    os.environ["CUDA_VISIBLE_DEVICES"] = 7
   else:
     device = torch.device('cpu')
 
