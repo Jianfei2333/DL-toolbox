@@ -18,7 +18,7 @@ import torch.optim as optim
 os.environ['print_every'] = '10'
 TRAIN_EPOCHS=500
 
-train_dataloader, val_dataloader, test_dataloader = cifar10.getdata()
+train_dataloader, val_dataloader, test_dataloader, sample = cifar10.getdata()
 
 
 model = nn.Sequential(
