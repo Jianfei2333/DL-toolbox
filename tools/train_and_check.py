@@ -1,11 +1,10 @@
 import torch
 import os
+from Utils.globaltb import writer
 
-from torch.utils.tensorboard import SummaryWriter
-import torchvision
-writer = SummaryWriter(log_dir=os.environ['logdir'])
+writer = writer()
 
-def checkAcc(loader, model):
+def checkAcc(loader, model, step=0):
   """
   Check the accuracy of the model on validation set / test set.
 
@@ -34,8 +33,14 @@ def checkAcc(loader, model):
       _, preds = scores.max(1)
       num_correct += (preds == y).sum()
       num_samples += preds.size(0)
+
     acc = float(num_correct) / num_samples
-    print('Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc))
+    prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
+    print(prompt)
+    if loader.dataset.train:
+      writer.add_scalars('Train/Acc',{'Acc': acc}, step)
+    else:
+      writer.add_text(os.environ['filename'], prompt, step)
 
 def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
   """
@@ -64,7 +69,7 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
       scores = model(x)
       loss = torch.nn.functional.cross_entropy(scores, y)
 
-      writer.add_scalars('loss',{'loss': loss.item()}, step)
+      writer.add_scalars('Train/loss',{'loss': loss.item()}, step)
       step += 1
 
       optimizer.zero_grad()
@@ -72,8 +77,9 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
       loss.backward()
 
       optimizer.step()
+      
 
-      if t % 100 == 0:
+      if t % int(os.environ['print_every']) == 0:
         print('Iteration %d, loss = %.4f' % (t, loss.item()))
-        checkAcc(val_dataloader, model)
+        checkAcc(val_dataloader, model, step)
         print()

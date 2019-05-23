@@ -20,6 +20,7 @@ def getdata():
   ])
 
   cifar10_train = dset.CIFAR10(DATAPATH, train=True, download=True, transform=transform)
+  sample = cifar10_train.__getitem__(0)[0][None, :, :, :]
   train_dataloader = DataLoader(cifar10_train, batch_size=64, sampler=sampler.SubsetRandomSampler(range(NUM_TRAIN)))
 
   cifar10_val = dset.CIFAR10(DATAPATH, train=True, download=True, transform=transform)
@@ -30,4 +31,4 @@ def getdata():
 
   print ("Collect data complete!\n")
 
-  return (train_dataloader, val_dataloader, test_dataloader)
+  return (train_dataloader, val_dataloader, test_dataloader, sample)

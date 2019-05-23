@@ -7,7 +7,7 @@ import random
 
 import sys
 sys.path.append("..")
-from utils.utils import flatten
+from Networks.Utils.utils import flatten
 
 class Model(nn.Module):
   """
@@ -47,8 +47,6 @@ def test_ThreeLayerConvNet():
   x = torch.zeros((64, 3, 32, 32), dtype=torch.float32)
   channel1 = random.randint(0, 100)
   channel2 = random.randint(0, 100)
-  print ("channel_1 = %d, channel_2 = %d" % (channel1, channel2))
-
   model = Model(in_channel=3, channel_1=channel1, channel_2=channel2, out_dim=10)
   scores = model(x)
   print(scores.size())

@@ -7,7 +7,7 @@ import random
 
 import sys
 sys.path.append("..")
-from utils.utils import flatten
+from Networks.Utils.utils import flatten
 
 class Model(nn.Module):
   """
