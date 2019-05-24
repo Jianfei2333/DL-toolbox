@@ -1,6 +1,7 @@
 import http.server as server
 import cgi
 import json
+import os
 
 PORT = 10000
 
@@ -23,6 +24,8 @@ class WebhookHandler(server.BaseHTTPRequestHandler):
 
     if message['hook_id'] == 112006256:
       print ('It\'s me!')
+      os.popen('sync.sh')
+      print ('Sync complete!')
       self.send_response(200)
       self.end_headers()
       return
