@@ -44,7 +44,7 @@ def checkAcc(loader, model, step=0):
     else:
       writer.add_text(os.environ['filename'], prompt + 'on TEST set.', step)
 
-def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, epochs=1):
+def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, pretrain_epochs=0, epochs=1, step=0):
   """
   Train a model with optimizer using PyTorch API.
 
@@ -53,7 +53,10 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, e
     optimizer: An Optimizer object used to train the model.
     train_dataloader: A Torchvision DataLoader with training data.
     val_dataloader: A Torchvision DataLoader with validation data.
+    test_dataloader: A Torchvision DataLoader with test data.
+    pretrain_epochs: (Optional) A Python integet giving the number of epochs the model pretrained.
     epochs: (Optional) A Python integer giving the number of epochs to train for.
+    step: (Optional) A Python integer giving the number of steps the model pretrained.
 
   Returns:
     Nothing, but prints model accuracies during training.
@@ -61,7 +64,6 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, e
   device = os.environ['device']
 
   model = model.to(device=device)
-  step = 1
   for e in range(epochs):
     for t, (x, y) in enumerate(train_dataloader):
       model.train()
@@ -79,7 +81,6 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, e
       loss.backward()
 
       optimizer.step()
-      
 
       if t % int(os.environ['print_every']) == 0:
         print('Iteration %d, loss = %.4f' % (t, loss.item()))
@@ -92,5 +93,12 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, e
       if not os.path.exists(savepath):
         os.mkdir(savepath)
         print ('Create dir', savepath)
-      torch.save(model.state_dict(), savepath + str(e+1) + 'epochs.pkl')
-      print ('Model save as', savepath + str(e+1) + 'epochs.pkl')
+      torch.save({
+        'state_dict': model.state_dict(),
+        'epochs': e+pretrain_epochs,
+        'episodes': step,
+        'logdir': os.environ['logdir']
+        },
+        savepath + str(e+pretrain_epochs+1) + 'epochs.pkl'
+      )
+      print ('Model save as', savepath + str(e+pretrain_epochs+1) + 'epochs.pkl')
