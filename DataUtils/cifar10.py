@@ -5,7 +5,7 @@ import torchvision.datasets as dset
 import torchvision.transforms as T
 
 import sys
-sys.path.append('..')
+sys.path.append('../')
 
 DATAPATH = './data'
 NUM_TRAIN = 49000
