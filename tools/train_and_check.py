@@ -89,7 +89,7 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, p
 
     if e % int(os.environ['save_every']) == 0:
       checkAcc(test_dataloader, model, e)
-      savepath = os.environ['savepath'] + os.environ['filename'] + '/'
+      savepath = os.environ['savepath']
       if not os.path.exists(savepath):
         os.mkdir(savepath)
         print ('Create dir', savepath)
