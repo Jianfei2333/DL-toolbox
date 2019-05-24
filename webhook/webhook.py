@@ -17,12 +17,14 @@ class WebhookHandler(server.BaseHTTPRequestHandler):
     
     length = int(self.headers['content-length'])
     message = json.loads(self.rfile.read(length))
-    if 'hook_id' not in message.keys():
+    
+    print(message['repository']['id'])
+    if 'repository' not in message.keys():
       self.send_response(400)
       self.end_headers()
       return
 
-    if message['hook_id'] == 112006256:
+    if message['repository']['id'] == 187359385:
       print ('It\'s me!')
       os.system('git stash && git pull && git stash pop')
       print ('Sync complete!')
