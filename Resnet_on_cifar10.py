@@ -22,8 +22,13 @@ import torch.optim as optim
 # Training setup.
 os.environ['print_every'] = '10'
 os.environ['save_every'] = '10'
-TRAIN_EPOCHS=100
+TRAIN_EPOCHS=50
 LEARNING_RATE=0.1
+
+continue_train=False
+PRETRAIN_EPOCHS=0
+pretrain_model_path = os.environ['savepath']+str(PRETRAIN_EPOCHS)+'epochs.pkl'
+step=0
 
 # GOT DATA
 train_dataloader, val_dataloader, test_dataloader, sample = cifar10.getdata()
@@ -52,8 +57,24 @@ model = nn.Sequential(
   nn.Linear(512, 10)
 )
 
+if continue_train:
+  model_checkpoint = torch.load(pretrain_model_path)
+  model.load_state_dict(model_checkpoint['state_dict'])
+  print('Checkpoint restored!')
+  step = model_checkpoint['episodes']
+  os.environ['logdir'] = model_checkpoint['logdir']
+
+
 # DEFINE OPTIMIZER
 optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 # RUN TRAINING PROCEDURE
-mtool.train(model, optimizer, train_dataloader, val_dataloader, TRAIN_EPOCHS)
+mtool.train(
+  model,
+  optimizer,
+  train_dataloader,
+  val_dataloader,
+  PRETRAIN_EPOCHS,
+  TRAIN_EPOCHS,
+  step
+)

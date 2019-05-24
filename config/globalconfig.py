@@ -12,7 +12,7 @@ def run():
   Return:
     None, but set environment parameters.
       where_am_i: 'pc' or 'lab', showing where this project is running.
-      datapath: Data dir.
+      datapath: Data dir.kk
       device: Device configuration with auto recommendation, namely, 'cpu' or 'cuda:#id'
       logdir: Tensorboard log dir.
   """
@@ -46,10 +46,13 @@ def update_filename(file):
     None, but set environment parameters.
       logdir: logdir + '-' + filename
       filename: String of entrance file name.(Without postfix '.py')
+      savepath: savepath + filename + '/'
   """
   s = file.rfind('/')
   e = file.find('.')
   filename = file[s+1:e]
   os.environ['logdir'] += '-'
   os.environ['logdir'] += filename
+  os.environ['savepath'] += filename
+  os.environ['savepath'] += '/'
   os.environ['filename'] = filename
