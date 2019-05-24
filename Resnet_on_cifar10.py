@@ -22,7 +22,7 @@ import torch.optim as optim
 # Training setup.
 os.environ['print_every'] = '10'
 os.environ['save_every'] = '10'
-TRAIN_EPOCHS=200
+TRAIN_EPOCHS=100
 LEARNING_RATE=0.1
 
 # GOT DATA
