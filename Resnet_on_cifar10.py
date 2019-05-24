@@ -74,6 +74,7 @@ mtool.train(
   optimizer,
   train_dataloader,
   val_dataloader,
+  test_dataloader,
   PRETRAIN_EPOCHS,
   TRAIN_EPOCHS,
   step
