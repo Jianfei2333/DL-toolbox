@@ -16,7 +16,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 os.environ['print_every'] = '10'
-TRAIN_EPOCHS=500
+TRAIN_EPOCHS=200
 
 train_dataloader, val_dataloader, test_dataloader, sample = cifar10.getdata()
 
@@ -44,7 +44,7 @@ model = nn.Sequential(
   nn.Linear(512, 10)
 )
 
-optimizer = optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 
 mtool.train(model, optimizer, train_dataloader, val_dataloader, TRAIN_EPOCHS)
 
