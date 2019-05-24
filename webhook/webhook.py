@@ -24,7 +24,7 @@ class WebhookHandler(server.BaseHTTPRequestHandler):
 
     if message['hook_id'] == 112006256:
       print ('It\'s me!')
-      os.popen('sync.sh')
+      os.system('git stash && git pull && git stash pop')
       print ('Sync complete!')
       self.send_response(200)
       self.end_headers()
