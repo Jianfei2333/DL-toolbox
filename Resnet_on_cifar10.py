@@ -11,9 +11,6 @@ from Networks import Flatten
 # Data loader.
 from DataUtils import cifar10
 
-# Useful tools.
-from tools import train_and_check as mtool
-
 # Official packages.
 import torch
 import torch.nn as nn
@@ -67,6 +64,9 @@ if continue_train:
 
 # DEFINE OPTIMIZER
 optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
+
+# Useful tools.
+from tools import train_and_check as mtool
 
 # RUN TRAINING PROCEDURE
 mtool.train(
