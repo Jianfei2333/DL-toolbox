@@ -18,7 +18,9 @@ def checkAcc(loader, model, step=0):
   if loader.dataset.train:
     print('Checking accuracy on validation set.')
   else:
+    print('##############################')
     print('Checking accuracy on test set.')
+    print('##############################')
 
   device=os.environ['device']
 
@@ -40,9 +42,9 @@ def checkAcc(loader, model, step=0):
     if loader.dataset.train:
       writer.add_scalars('Train/Acc',{'Acc': acc}, step)
     else:
-      writer.add_text(os.environ['filename'], prompt, step)
+      writer.add_text(os.environ['filename'], prompt + 'on TEST set.', step)
 
-def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
+def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, epochs=1):
   """
   Train a model with optimizer using PyTorch API.
 
@@ -83,3 +85,12 @@ def train(model, optimizer, train_dataloader, val_dataloader, epochs=1):
         print('Iteration %d, loss = %.4f' % (t, loss.item()))
         checkAcc(val_dataloader, model, step)
         print()
+
+    if e % int(os.environ['save_every']) == 0:
+      checkAcc(test_dataloader, model, e)
+      savepath = os.environ['savepath'] + os.environ['filename'] + '/'
+      if not os.path.exists(savepath):
+        os.mkdir(savepath)
+        print ('Create dir', savepath)
+      torch.save(model.state_dict(), savepath + str(e+1) + 'epochs.pkl')
+      print ('Model save as', savepath + str(e+1) + 'epochs.pkl')
