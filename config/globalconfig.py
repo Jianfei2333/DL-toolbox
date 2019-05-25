@@ -21,13 +21,13 @@ def run():
 
   if user.find('jianfei') == -1:
     os.environ['where_am_i'] = 'pc'
-    os.environ['datapath'] = ''
+    os.environ['datapath'] = '/home/huihui/Data'
     os.environ['device'] = 'cpu'
     os.environ['logdir'] = '/home/huihui/Log/tensorboard-log/'
     os.environ['savepath'] = '/home/huihui/Models/'
   else:
     os.environ['where_am_i'] = 'lab'
-    os.environ['datapath'] = ''
+    os.environ['datapath'] = '/data0/share/dataset'
     os.environ['device'] = 'cuda:'+d.get_gpu_choice()
     os.environ['logdir'] = '/data0/jianfei/tensorboard-log/'
     os.environ['savepath'] = '/data0/jianfei/models/'

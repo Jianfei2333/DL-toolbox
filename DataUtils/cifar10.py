@@ -1,13 +1,11 @@
+import os
 from torch.utils.data import DataLoader
 from torch.utils.data import sampler
 
 import torchvision.datasets as dset
 import torchvision.transforms as T
 
-import sys
-sys.path.append('../')
-
-DATAPATH = './data'
+DATAPATH = os.environ['datapath']
 NUM_TRAIN = 49000
 
 def getdata():
