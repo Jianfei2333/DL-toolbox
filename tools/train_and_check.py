@@ -88,14 +88,13 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, p
         print()
 
     if (e+1) % int(os.environ['save_every']) == 0:
-      checkAcc(test_dataloader, model, e)
+      checkAcc(test_dataloader, model, e+pretrain_epochs+1)
       savepath = os.environ['savepath']
       if not os.path.exists(savepath):
         os.mkdir(savepath)
         print ('Create dir', savepath)
       torch.save({
         'state_dict': model.state_dict(),
-        'epochs': e+pretrain_epochs,
         'episodes': step,
         'logdir': os.environ['logdir']
         },
