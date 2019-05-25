@@ -22,8 +22,10 @@ os.environ['save_every'] = '10'
 TRAIN_EPOCHS=50
 LEARNING_RATE=0.1
 
+# 设置从头训练/继续训练
 continue_train=False
 PRETRAIN_EPOCHS=0
+
 pretrain_model_path = os.environ['savepath']+str(PRETRAIN_EPOCHS)+'epochs.pkl'
 step=0
 
