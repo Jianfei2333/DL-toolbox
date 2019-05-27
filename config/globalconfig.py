@@ -21,7 +21,7 @@ def run():
 
   if user.find('jianfei') == -1:
     os.environ['where_am_i'] = 'pc'
-    os.environ['datapath'] = '/home/huihui/Data/ISIC2018/'
+    os.environ['datapath'] = '/home/huihui/Data/ISIC2019/'
     os.environ['device'] = 'cpu'
     os.environ['logdir'] = '/home/huihui/Log/tensorboard-log/'
     os.environ['savepath'] = '/home/huihui/Models/'
