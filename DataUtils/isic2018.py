@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data import sampler
+import torch
 
 import torchvision.datasets as dset
 import torchvision.transforms as T
@@ -69,6 +70,7 @@ def getdata():
   transform = T.Compose([
     T.Resize((224,224)),
     T.ToTensor(),
+    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
   ])
 
   isic18_train = ISIC18(DATAPATH, train=True, transform=transform)
@@ -87,6 +89,39 @@ def getdata():
 
   return (train_dataloader, val_dataloader, test_dataloader, sample)
 
-def test_ISIC2018():
-  td1, vd, td2, sp = getdata()
-  
+def compute_mean():
+  transform = T.Compose([
+    # T.Resize((224,224)),
+    T.ToTensor(),
+  ])
+  isic18_train = ISIC18(DATAPATH, train=True, transform=transform)
+  img0 = isic18_train.__getitem__(0)[0][None, :, :, :]
+  mean = torch.mean(img0, dim=(2,3))/isic18_train.__len__()
+  for i in range(1, isic18_train.__len__()):
+    img = isic18_train.__getitem__(i)[0][None, :, :, :]
+    mean += torch.mean(img, dim=(2,3))/isic18_train.__len__()
+    print(mean)
+  print (mean.size(), mean)
+
+def compute_var():
+  mean = torch.tensor([0.7635, 0.5461, 0.5705])
+  transform = T.Compose([
+    # T.Resize((224,224)),
+    T.ToTensor(),
+  ])
+  isic18_train = ISIC18(DATAPATH, train=True, transform=transform)
+  img0 = isic18_train.__getitem__(0)[0][None, :, :, :]
+  img = img0 - mean[None, :, None, None]
+  img = img * img
+  totalvar = torch.sum(img * img, dim=(2,3))/(450*600*isic18_train.__len__())
+  for i in range(1, isic18_train.__len__()):
+    img = isic18_train.__getitem__(i)[0][None, :, :, :]
+    img = img * img
+    totalvar += torch.sum(img * img, dim=(2,3))/(450*600*isic18_train.__len__())
+    print (i, ':', totalvar)
+  print (totalvar.size(), totalvar)
+
+# 不进行resize，直接计算的norm参数
+# mean = [0.7635, 0.5461, 0.5705]
+# var = [0.4009, 0.1265, 0.1579]
+

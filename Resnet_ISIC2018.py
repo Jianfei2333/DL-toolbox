@@ -76,13 +76,13 @@ optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 from tools import train_and_check as mtool
 
 # RUN TRAINING PROCEDURE
-mtool.train(
-  model,
-  optimizer,
-  train_dataloader,
-  val_dataloader,
-  test_dataloader,
-  PRETRAIN_EPOCHS,
-  TRAIN_EPOCHS,
-  step
-)
+# mtool.train(
+#   model,
+#   optimizer,
+#   train_dataloader,
+#   val_dataloader,
+#   test_dataloader,
+#   PRETRAIN_EPOCHS,
+#   TRAIN_EPOCHS,
+#   step
+# )
