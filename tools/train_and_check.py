@@ -79,6 +79,7 @@ def train(
       model.train()
       x = x.to(device=device, dtype=torch.float32)
       y = y.to(device=device, dtype=torch.long)
+      weights = weights.to(device=device, dtype=torch.float32)
 
       scores = model(x)
       if weights is not None:
