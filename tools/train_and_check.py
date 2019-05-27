@@ -83,7 +83,7 @@ def train(
 
       scores = model(x)
       if weights is not None:
-        loss = torch.nn.functional.cross_entropy(scores, y, 1/weights)
+        loss = torch.nn.functional.cross_entropy(scores, y, weights)
       else:
         loss = torch.nn.functional.cross_entropy(scores, y)
 

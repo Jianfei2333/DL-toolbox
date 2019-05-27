@@ -51,6 +51,52 @@ class Model(nn.Module):
 
     return scores
 
+class BottleNeck(nn.Module):
+  """
+  Deep residual network building block.
+  Structure:
+    x - Conv - ReLU - Conv - Add - ReLU
+    |-------------------------------|
+
+  Attributes:
+    in_channel: The number of channels in input.
+    out_channel: The number of channels in output.
+    downsample: Boolean, use downsample or not.
+  """
+  def __init__(self, in_channel, bottle_channel, out_channel, downsample=False):
+    super().__init__()
+    self.downsample = downsample
+    self.conv1 = nn.Conv2d(in_channel, bottle_channel, (1,1), stride=1, padding=0)
+    if downsample:
+      self.conv2 = nn.Conv2d(bottle_channel, bottle_channel, (3,3), stride=2, padding=1)
+      self.conv_shortcut = nn.Conv2d(in_channel, out_channel, (1,1), stride=2, padding=0)
+    else:
+      self.conv2 = nn.Conv2d(in_channel, bottle_channel, (3,3), stride=1, padding=1)
+    self.conv3 = nn.Conv2d(bottle_channel, out_channel, (1,1), stride=1, padding=0)
+
+    nn.init.kaiming_normal_(self.conv1.weight)
+    nn.init.constant_(self.conv1.bias, 0)
+    nn.init.kaiming_normal_(self.conv2.weight)
+    nn.init.constant(self.conv2.bias, 0)
+    nn.init.kaiming_normal_(self.conv3.weight)
+    nn.init.constant(self.conv3.bias, 0)
+
+    self.bn1 = nn.BatchNorm2d(bottle_channel)
+    self.bn2 = nn.BatchNorm2d(bottle_channel)
+    self.bn3 = nn.BatchNorm2d(out_channel)
+
+  def forward(self, x):
+    a = F.relu(self.bn1(self.conv1(x)))
+    b = F.relu(self.bn2(self.conv2(a)))
+    c = self.bn3(self.conv3(b))
+    if self.downsample:
+      shortcut = self.conv_shortcut(x)
+    else:
+      shortcut = x
+    scores = F.relu(c + shortcut)
+
+    return scores
+
 def test_ResBlock():
   x = torch.zeros((64, 128, 32, 32), dtype=torch.float32)
   outchannel = 128

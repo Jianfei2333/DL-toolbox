@@ -8,6 +8,7 @@ globalconfig.update_filename(__file__)
 from Networks import ResBlock as R
 from Networks import LinearReLU
 from Networks import Flatten
+from Networks import Resnet
 
 # Data loader.
 # from DataUtils import cifar10
@@ -21,6 +22,7 @@ import torch.optim as optim
 # Training setup.
 os.environ['print_every'] = '10'
 os.environ['save_every'] = '10'
+os.environ['batchsize'] = '64'
 TRAIN_EPOCHS=50
 LEARNING_RATE=1e-6
 
@@ -28,38 +30,44 @@ LEARNING_RATE=1e-6
 continue_train=False
 PRETRAIN_EPOCHS=0
 
+import sys
+args = sys.argv[1:]
+for arg in args:
+  if arg.find('--learning-rate=') != -1:
+    LEARNING_RATE=float(arg[16:])
+    continue
+  if arg.find('--batch-size=') != -1:
+    os.environ['batchsize'] = arg[13:]
+    continue
+  if arg.find('--print-every=') != -1:
+    os.environ['print_every='] = arg[14:]
+    continue
+  if arg.find('--save-every=') != -1:
+    os.environ['save_every'] = arg[13:]
+    continue
+  if arg.find('--epoches=') != -1:
+    TRAIN_EPOCHS = int(arg[10:])
+    continue
+  if arg.find('--continue') != -1:
+    continue_train = True
+    continue
+  if arg.find('--pretrain=') != -1:
+    PRETRAIN_EPOCHS = int(arg[11:])
+    continue
+  else:
+    print('Args error!', arg, 'not found!')
+    sys.exit()
+
 pretrain_model_path = os.environ['savepath']+str(PRETRAIN_EPOCHS)+'epochs.pkl'
 step=0
+
+# 下面开始进行主干内容
 
 # GOT DATA
 train_dataloader, val_dataloader, test_dataloader, sample, weights = isic2018.getdata()
 
-
 # DEFINE MODEL
-model = nn.Sequential(
-  nn.Conv2d(3, 64, (7,7), stride=2, padding=3),
-  nn.AvgPool2d((2,2)),
-  R.Model(64, 64),
-  R.Model(64, 64),
-  R.Model(64, 64),
-  R.Model(64, 128, downsample=True),
-  R.Model(128, 128),
-  R.Model(128, 128),
-  R.Model(128, 128),
-  R.Model(128, 256, downsample=True),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 512, downsample=True),
-  R.Model(512, 512),
-  R.Model(512, 512),
-  nn.AvgPool2d((7,7)),
-  Flatten.Layer(),
-  LinearReLU.Model(512, 1000),
-  nn.Linear(1000,7)
-)
+model = Resnet.Resnet34()
 
 if continue_train:
   model_checkpoint = torch.load(pretrain_model_path)
