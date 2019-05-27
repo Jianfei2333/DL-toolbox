@@ -22,7 +22,7 @@ import torch.optim as optim
 os.environ['print_every'] = '10'
 os.environ['save_every'] = '10'
 TRAIN_EPOCHS=50
-LEARNING_RATE=0.1
+LEARNING_RATE=1e-6
 
 # 设置从头训练/继续训练
 continue_train=False
