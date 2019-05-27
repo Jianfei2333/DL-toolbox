@@ -32,7 +32,7 @@ pretrain_model_path = os.environ['savepath']+str(PRETRAIN_EPOCHS)+'epochs.pkl'
 step=0
 
 # GOT DATA
-train_dataloader, val_dataloader, test_dataloader, sample = isic2018.getdata()
+train_dataloader, val_dataloader, test_dataloader, sample, weights = isic2018.getdata()
 
 
 # DEFINE MODEL
@@ -70,7 +70,8 @@ if continue_train:
 
 
 # DEFINE OPTIMIZER
-optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
+# optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 # Useful tools.
 from tools import train_and_check as mtool
@@ -82,6 +83,7 @@ mtool.train(
   train_dataloader,
   val_dataloader,
   test_dataloader,
+  weights,
   PRETRAIN_EPOCHS,
   TRAIN_EPOCHS,
   step
