@@ -1,6 +1,7 @@
 import torch
 import os
 from Utils.globaltb import writer
+from Networks import FocalLoss
 
 writer = writer()
 
@@ -44,7 +45,16 @@ def checkAcc(loader, model, step=0):
     else:
       writer.add_text(os.environ['filename'], prompt + 'on TEST set.', step)
 
-def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, pretrain_epochs=0, epochs=1, step=0):
+def train(
+  model, optimizer,
+  train_dataloader,
+  val_dataloader,
+  test_dataloader,
+  weights=None,
+  pretrain_epochs=0,
+  epochs=1,
+  step=0
+):
   """
   Train a model with optimizer using PyTorch API.
 
@@ -71,7 +81,10 @@ def train(model, optimizer, train_dataloader, val_dataloader, test_dataloader, p
       y = y.to(device=device, dtype=torch.long)
 
       scores = model(x)
-      loss = torch.nn.functional.cross_entropy(scores, y)
+      if weights is not None:
+        loss = torch.nn.functional.cross_entropy(scores, y, 1/weights)
+      else:
+        loss = torch.nn.functional.cross_entropy(scores, y)
 
       writer.add_scalars('Train/loss',{'loss': loss.item()}, step)
       step += 1

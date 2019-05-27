@@ -26,16 +26,18 @@ def getlabels(mode):
   labels = np.array(list(range(0, len(images))))
   label_dic = df.columns.values.tolist()[1:]
   val_ind = np.array([])
+  weights = np.zeros(len(label_dic))
 
   for i in range(0, len(label_dic)):
     ind = df.index[df[df.columns[i+1]] == 1].tolist()
+    weights[i] = len(ind)
     lab = label_dic[i]
     labels[ind] = i
     if i != len(label_dic)-1:
       val_ind = np.append(np.random.choice(ind, int(NUM_VAL*float(len(ind)/len(labels)))), val_ind)
     else:
       val_ind = np.append(np.random.choice(ind, NUM_VAL-len(val_ind)), val_ind)
-  return label_dic, images, labels, val_ind
+  return label_dic, images, labels, val_ind, weights
 
 class ISIC18(Dataset):
   def __init__(self, root, train=True, transform=None):
@@ -45,10 +47,10 @@ class ISIC18(Dataset):
     
     if self.train:
       self.data_folder = DATAPATH + 'Train/'
-      self.classes, self.img_paths, self.labels, self.val_ind = getlabels('Train')
+      self.classes, self.img_paths, self.labels, self.val_ind, self.weights = getlabels('Train')
     else:
       self.data_folder = DATAPATH + 'Test/'
-      self.classes, self.img_paths, self.labels, self.val_ind = getlabels('Test')
+      self.classes, self.img_paths, self.labels, self.val_ind, self.weights = getlabels('Test')
 
   def __getitem__(self, index):
     img_path = self.img_paths[int(index)]
@@ -75,9 +77,9 @@ def getdata():
 
   isic18_train = ISIC18(DATAPATH, train=True, transform=transform)
   sample = isic18_train.__getitem__(0)[0][None, :, :, :]
-  print(sample.shape)
+  weights = torch.from_numpy(1/isic18_train.weights).type(torch.float)
   train_dataloader = DataLoader(isic18_train, batch_size=1, sampler=sampler.SubsetRandomSampler(list(set(range(NUM_TRAIN+NUM_VAL)).difference(set(isic18_train.val_ind)))))
-
+  
   isic18_val = ISIC18(DATAPATH, train=True, transform=transform)
   val_dataloader = DataLoader(isic18_val, batch_size=1, sampler=sampler.SubsetRandomSampler(isic18_val.val_ind))
 
@@ -87,7 +89,7 @@ def getdata():
 
   print ("Collect data complete!\n")
 
-  return (train_dataloader, val_dataloader, test_dataloader, sample)
+  return (train_dataloader, val_dataloader, test_dataloader, sample, weights)
 
 def compute_mean():
   transform = T.Compose([
