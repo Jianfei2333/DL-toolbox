@@ -78,10 +78,10 @@ def getdata():
   isic18_train = ISIC18(DATAPATH, train=True, transform=transform)
   sample = isic18_train.__getitem__(0)[0][None, :, :, :]
   weights = torch.from_numpy(1/isic18_train.weights).type(torch.float)
-  train_dataloader = DataLoader(isic18_train, batch_size=1, sampler=sampler.SubsetRandomSampler(list(set(range(NUM_TRAIN+NUM_VAL)).difference(set(isic18_train.val_ind)))))
+  train_dataloader = DataLoader(isic18_train, batch_size=64, sampler=sampler.SubsetRandomSampler(list(set(range(NUM_TRAIN+NUM_VAL)).difference(set(isic18_train.val_ind)))))
   
   isic18_val = ISIC18(DATAPATH, train=True, transform=transform)
-  val_dataloader = DataLoader(isic18_val, batch_size=1, sampler=sampler.SubsetRandomSampler(isic18_val.val_ind))
+  val_dataloader = DataLoader(isic18_val, batch_size=64, sampler=sampler.SubsetRandomSampler(isic18_val.val_ind))
 
   # isic18_test = ISIC18(DATAPATH, train=False, transform=transform)
   # test_dataloader = DataLoader(isic18_test, batch_size=64)
