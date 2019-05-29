@@ -5,6 +5,7 @@ import numpy as np
 from config import globalconfig
 globalconfig.run()
 globalconfig.update_filename(__file__)
+os.environ['batchsize'] = 128
 
 from Networks import ResBlock as R
 from Networks import Resnet
