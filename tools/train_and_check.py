@@ -49,8 +49,8 @@ def checkAcc(loader, model, step=0):
     acc = float(num_correct) / num_samples
     class_acc = class_correct / class_samples
     # Add mean value
-    classes = np.stack((['mean'], classes))
-    class_acc = np.stack(([np.mean(class_acc)], class_acc))
+    classes = np.hstack((['mean'], classes))
+    class_acc = np.hstack(([np.mean(class_acc)], class_acc))
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
     class_acc_df = pd.DataFrame(class_acc, index='Acc', columns=classes)
