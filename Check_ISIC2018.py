@@ -14,9 +14,10 @@ from DataUtils import isic2018
 from tools import metrics
 
 # Model to check.
+# NEED MODIFY.
 modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/20epochs.pkl'
-
 model = Resnet.Resnet34()
+# END OF NEED MODIFY.
 
 model.load_state_dict(torch.load(modelpath)['state_dict'])
 
