@@ -116,7 +116,7 @@ def isic18(scores, y, labels):
     'PPV',
     'NPV'
   ]
-  columns = np.stack((['mean'], labels))
+  columns = np.hstack((['mean'], labels))
   scoring = pd.DataFrame(scoring, index=index, columns=columns)
 
   return scoring
