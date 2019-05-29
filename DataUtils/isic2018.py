@@ -11,11 +11,12 @@ import torchvision.transforms as T
 
 # 图像大小：600*450
 # 个数：10015
+# 分割测试集大小：1000
 # 种类：7(0~6)
 
 DATAPATH = os.environ['datapath']
 NUM_VAL = 1000
-NUM_TRAIN = 10015 - NUM_VAL
+NUM_TRAIN = 9015 - NUM_VAL
 
 # CSV处理器
 def getlabels(mode):
