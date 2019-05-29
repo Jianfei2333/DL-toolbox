@@ -16,7 +16,7 @@ from tools import metrics
 # Model to check.
 modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/20epochs.pkl'
 
-model = Resnet.Resnet34
+model = Resnet.Resnet34()
 
 model.load_state_dict(torch.load(modelpath)['state_dict'])
 
