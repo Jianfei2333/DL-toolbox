@@ -29,15 +29,15 @@ def getlabels(mode):
   val_ind = np.array([])
   weights = np.zeros(len(label_dic))
 
-  for i in range(0, len(label_dic)):
+  for i in range(len(label_dic)):
     ind = df.index[df[df.columns[i+1]] == 1].tolist()
     weights[i] = len(ind)
     lab = label_dic[i]
     labels[ind] = i
     if i != len(label_dic)-1:
-      val_ind = np.append(np.random.choice(ind, int(NUM_VAL*float(len(ind)/len(labels)))), val_ind)
+      val_ind = np.append(np.random.choice(ind, int(NUM_VAL*float(len(ind)/len(labels))), replace=False), val_ind)
     else:
-      val_ind = np.append(np.random.choice(ind, NUM_VAL-len(val_ind)), val_ind)
+      val_ind = np.append(np.random.choice(ind, NUM_VAL-len(val_ind), replace=False), val_ind)
   return label_dic, images, labels, val_ind, weights
 
 # 自定义torchvisoin.dataset类
@@ -93,9 +93,9 @@ def getdata():
   isic18_val = ISIC18(DATAPATH, train=True, transform=transform)
   val_dataloader = DataLoader(isic18_val, batch_size=int(os.environ['batchsize']), sampler=sampler.SubsetRandomSampler(isic18_val.val_ind))
 
-  # isic18_test = ISIC18(DATAPATH, train=False, transform=transform)
-  # test_dataloader = DataLoader(isic18_test, batch_size=int(os.environ['batchsize']))
-  test_dataloader = None
+  isic18_test = ISIC18(DATAPATH, train=False, transform=transform)
+  test_dataloader = DataLoader(isic18_test, batch_size=512)
+  # test_dataloader = None
 
   print ("Collect data complete!\n")
 
@@ -155,7 +155,7 @@ def compute_var():
 # var = [0.4009, 0.1265, 0.1579]
 # std = [0.6332, 0.3557, 0.3974]
 
-compute_var()
+# compute_var()
 
 # 19
 # mean = [0.6678, 0.5298, 0.5244]
