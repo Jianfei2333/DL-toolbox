@@ -41,7 +41,8 @@ def checkAcc(loader, model, step=0):
       num_correct += (preds == y).sum()
       num_samples += preds.size(0)
       for k in range(C):
-        class_correct[k] += torch.where((preds == k and y == k), torch.ones_like(preds), torch.zeros_like(preds)).sum().item()
+        correct_tensor = torch.where(preds == y, torch.ones_like(preds), torch.zeros_like(preds))
+        class_correct[k] += torch.where(correct_tensor == k, torch.ones_like(preds), torch.zeros_like(preds)).sum().item()
         class_samples[k] += torch.where(y == k, torch.ones_like(y), torch.zeros_like(y)).sum().item()
 
     acc = float(num_correct) / num_samples
