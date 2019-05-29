@@ -1,7 +1,6 @@
 import torch
 import os
 from Utils.globaltb import writer
-from Networks import FocalLoss
 
 writer = writer()
 
