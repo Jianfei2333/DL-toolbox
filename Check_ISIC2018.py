@@ -7,38 +7,16 @@ globalconfig.run()
 globalconfig.update_filename(__file__)
 
 from Networks import ResBlock as R
+from Networks import Resnet
 from Networks import Flatten
 from Networks import LinearReLU
 from DataUtils import isic2018
 from tools import metrics
 
 # Model to check.
-modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/220epochs.pkl'
+modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/20epochs.pkl'
 
-model = nn.Sequential(
-  nn.Conv2d(3, 64, (7,7), stride=2, padding=3),
-  nn.AvgPool2d((2,2)),
-  R.Model(64, 64),
-  R.Model(64, 64),
-  R.Model(64, 64),
-  R.Model(64, 128, downsample=True),
-  R.Model(128, 128),
-  R.Model(128, 128),
-  R.Model(128, 128),
-  R.Model(128, 256, downsample=True),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 256),
-  R.Model(256, 512, downsample=True),
-  R.Model(512, 512),
-  R.Model(512, 512),
-  nn.AvgPool2d((7,7)),
-  Flatten.Layer(),
-  LinearReLU.Model(512, 1000),
-  nn.Linear(1000,7)
-)
+model = Resnet.Resnet34
 
 model.load_state_dict(torch.load(modelpath)['state_dict'])
 
@@ -84,4 +62,3 @@ def check(loader, model, step=0):
 
 
 check(test_dataloader, model)
-      
