@@ -1,5 +1,6 @@
 import torch
 import os
+import numpy as np
 from Utils.globaltb import writer
 
 writer = writer()
@@ -24,8 +25,12 @@ def checkAcc(loader, model, step=0):
 
   device=os.environ['device']
 
+  classes = loader.dataset.classes
+  C = len(classes)
   num_correct = 0
   num_samples = 0
+  class_correct = np.zeros(C)
+  class_samples = np.zeros(C)
   model.eval()
   with torch.no_grad():
     for x, y in loader:
@@ -35,12 +40,17 @@ def checkAcc(loader, model, step=0):
       _, preds = scores.max(1)
       num_correct += (preds == y).sum()
       num_samples += preds.size(0)
+      for k in range(C):
+        class_correct[k] += torch.where(preds == k, 1, 0).sum().item()
+        class_samples[k] += torch.where(y == k, 1, 0).sum().item()
 
     acc = float(num_correct) / num_samples
+    class_acc = class_correct / class_samples
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
     if loader.dataset.train:
       writer.add_scalars('Train/Acc',{'Acc': acc}, step)
+      writer.add_scalars('Train/Class-Acc', {classes[k]: class_acc[k] for k in range(C)}, step)
     else:
       writer.add_text(os.environ['filename'], prompt + 'on TEST set.', step)
 
