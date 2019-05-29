@@ -53,7 +53,7 @@ def checkAcc(loader, model, step=0):
     class_acc = np.hstack(([np.mean(class_acc)], class_acc))
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
-    class_acc_df = pd.DataFrame(class_acc, index='Acc', columns=classes)
+    class_acc_df = pd.DataFrame(class_acc, index=['Acc'], columns=classes)
     print (class_acc_df)
     if loader.dataset.train:
       writer.add_scalars('Train/Acc',{'Acc': acc}, step)
