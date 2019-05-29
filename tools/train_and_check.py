@@ -46,6 +46,7 @@ def checkAcc(loader, model, step=0):
 
     acc = float(num_correct) / num_samples
     class_acc = class_correct / class_samples
+    print (class_correct, class_samples, class_acc)
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
     if loader.dataset.train:
