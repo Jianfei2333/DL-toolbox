@@ -1,6 +1,7 @@
 import torch
 import os
 import numpy as np
+import pandas as pd
 from Utils.globaltb import writer
 
 writer = writer()
@@ -47,9 +48,13 @@ def checkAcc(loader, model, step=0):
 
     acc = float(num_correct) / num_samples
     class_acc = class_correct / class_samples
-    print (class_correct, class_samples, class_acc)
+    # Add mean value
+    classes = np.stack((['mean'], classes))
+    class_acc = np.stack(([np.mean(class_acc)], class_acc))
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
+    class_acc_df = pd.DataFrame(class_acc, index='Acc', columns=classes)
+    print (class_acc_df)
     if loader.dataset.train:
       writer.add_scalars('Train/Acc',{'Acc': acc}, step)
       writer.add_scalars('Train/Class-Acc', {classes[k]: class_acc[k] for k in range(C)}, step)
