@@ -45,7 +45,7 @@ for arg in args:
   if arg.find('--save-every=') != -1:
     os.environ['save_every'] = arg[13:]
     continue
-  if arg.find('--epoches=') != -1:
+  if arg.find('--epochs=') != -1:
     TRAIN_EPOCHS = int(arg[10:])
     continue
   if arg.find('--continue') != -1:
