@@ -61,6 +61,7 @@ def check(loader, model, step=0):
   weights = loader.dataset.weights
   # print(scores.shape)
   # print(y_truth.shape)
+  print (weights.shape)
   metrics.isic18(scores, y_truth, weights, classes)
   
 
