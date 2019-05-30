@@ -120,7 +120,8 @@ def isic18(scores, y, weights, labels):
   scoring = pd.DataFrame(scoring, index=index, columns=columns)
 
   print(scoring)
-
-  aggregate = metrics.balanced_accuracy_score(y_true=y, y_pred=y_pred, sample_weight=weights)
+  # 修改为sampleweight
+  sample_weight = [1/weights[i] for i in y]
+  aggregate = metrics.balanced_accuracy_score(y_true=y, y_pred=y_pred, sample_weight=sample_weight)
 
   print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
