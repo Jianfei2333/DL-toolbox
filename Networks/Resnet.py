@@ -6,7 +6,7 @@ from Networks import LinearReLU
 def Resnet34():
   return nn.Sequential(
     nn.Conv2d(3, 64, (7,7), stride=2, padding=3),
-    nn.MaxPool2d((3,3), stride=2),
+    nn.MaxPool2d((3,3), stride=2, padding=1),
     R.Model(64, 64),
     R.Model(64, 64),
     R.Model(64, 64),
@@ -32,9 +32,9 @@ def Resnet34():
 
 def Resnet50():
   return nn.Sequential(
-    nn.Conv2d(3, 64, (7,7), stride=2, padding=3),
-    nn.MaxPool2d((3,3), stride=2),
-    R.BottleNeck(64, 64, 256),
+    nn.Conv2d(3, 256, (7,7), stride=2, padding=3),
+    nn.MaxPool2d((3,3), stride=2, padding=1),
+    R.BottleNeck(256, 64, 256),
     R.BottleNeck(256, 64, 256),
     R.BottleNeck(256, 64, 256),
     R.BottleNeck(256, 128, 512, downsample=True),
