@@ -28,5 +28,5 @@ def get_gpu_choice():
     print('###############################################################################')
     print('Warning: The best gpu now is in high load! Please check and use another server!')
     print('###############################################################################')
-  print ('Recommended gpu is: gpu%d, mem: %d/%d (%.2f%%), usage: %d%%' % (r['index'], r['memfree'], r['memtotal'], ((float)(r['memfree'])/r['memtotal']), r['usage']))
+  print ('Recommended gpu is: gpu%d, mem: %d/%d (%.2f%%), usage: %d%%' % (r['index'], r['memfree'], r['memtotal'], ((float)(r['memfree'])/r['memtotal'])*100, r['usage']))
   return str(r['index'])
