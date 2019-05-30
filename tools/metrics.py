@@ -63,6 +63,8 @@ def isic18(scores, y, weights, labels):
 
   cmatrix = metrics.confusion_matrix(y, y_pred)
   cmatrix_ele = None
+  print ('Confusion Matrix:')
+  print (cmatrix)
   # END OF INTEGRAL METRICS
 
   # Get element-wise confusion matrix in shape: (N, 2, 2)
