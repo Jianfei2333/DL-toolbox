@@ -43,14 +43,14 @@ def checkAcc(loader, model, step=0):
       scores = model(x)
       _, preds = scores.max(1)
       if y_pred is None:
-        y_pred = preds.numpy()
+        y_pred = preds.cpu().numpy()
       else:
-        y_pred = np.hstack((y_pred, preds.numpy()))
+        y_pred = np.hstack((y_pred, preds.cpu().numpy()))
 
       if y_true is None:
-        y_true = y.numpy()
+        y_true = y.cpu().numpy()
       else:
-        y_true = np.hstack((y_true, y.numpy()))
+        y_true = np.hstack((y_true, y.cpu().numpy()))
       num_correct += (preds == y).sum()
       num_samples += preds.size(0)
       for k in range(C):
