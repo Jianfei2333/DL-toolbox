@@ -16,7 +16,7 @@ from tools import metrics
 
 # Model to check.
 # NEED MODIFY.
-modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/20epochs.pkl'
+modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/40epochs.pkl'
 model = Resnet.Resnet34()
 # END OF NEED MODIFY.
 
@@ -57,7 +57,7 @@ def check(loader, model, step=0):
         y_truth = y.numpy()
       else:
         y_truth = np.hstack((y_truth, y.numpy()))
-  classes = np.array(loader.dataset.classses)
+  classes = np.array(loader.dataset.classes)
   weights = loader.dataset.weights
   # print(scores.shape)
   # print(y_truth.shape)
