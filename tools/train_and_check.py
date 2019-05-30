@@ -71,7 +71,7 @@ def checkAcc(loader, model, step=0):
     print (class_acc_df)
     
     sample_weight = [1/loader.dataset.weights[i] for i in y_true]
-    aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=loader.dataset.weights)
+    aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
     print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
 
     if loader.dataset.train:
