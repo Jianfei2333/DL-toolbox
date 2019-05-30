@@ -15,8 +15,8 @@ def get_gpus():
     params = parse(val)
     gpu = {}
     gpu['index'] = int(params[0])
-    gpu['memtotal'] = int(params[1][:params[1].find('MiB')].strip())
-    gpu['memfree'] = int(params[2][:params[2].find('MiB')].strip())
+    gpu['memfree'] = int(params[1][:params[1].find('MiB')].strip())
+    gpu['memtotal'] = int(params[2][:params[2].find('MiB')].strip())
     gpu['usage'] = int(params[3][:params[2].find('%')].strip())
     gpus.append(gpu)
   return gpus
