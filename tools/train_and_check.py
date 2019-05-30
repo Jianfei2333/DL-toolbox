@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from Utils.globaltb import writer
+import sklearn.metrics as metrics
 
 writer = writer()
 
@@ -34,27 +35,44 @@ def checkAcc(loader, model, step=0):
   class_samples = np.zeros(C)
   model.eval()
   with torch.no_grad():
+    y_pred = None
+    y_true = None
     for x, y in loader:
       x = x.to(device=device, dtype=torch.float)
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
       _, preds = scores.max(1)
+      if y_pred is None:
+        y_pred = preds.numpy()
+      else:
+        y_pred = np.hstack((y_pred, preds.numpy()))
+
+      if y_true is None:
+        y_true = y.numpy()
+      else:
+        y_true = np.hstack((y_true, y.numpy()))
       num_correct += (preds == y).sum()
       num_samples += preds.size(0)
       for k in range(C):
-        correct_tensor = torch.where(preds == y, preds, torch.full_like(preds, -1))
-        class_correct[k] += torch.where(correct_tensor == k, torch.ones_like(preds), torch.zeros_like(preds)).sum().item()
-        class_samples[k] += torch.where(y == k, torch.ones_like(y), torch.zeros_like(y)).sum().item()
+        cond_tensor = torch.where(y == k, torch.ones_like(y), torch.zeros_like(y))
+        pred_tensor = torch.where(preds == k, torch.ones_like(preds), torch.zeros_like(preds))
+        class_correct[k] += torch.where(cond_tensor == pred_tensor, torch.ones_like(preds), torch.zeros_like(preds)).sum().item()
+        class_samples[k] += y.shape[0]
 
     acc = float(num_correct) / num_samples
     class_acc = class_correct / class_samples
     # Add mean value
     classes = np.hstack((['mean'], classes))
     class_acc = np.hstack(([np.mean(class_acc)], class_acc))
+    # Print result
     prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
     print(prompt)
     class_acc_df = pd.DataFrame(class_acc[None, :], index=['Acc'], columns=classes)
     print (class_acc_df)
+    
+    aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=loader.dataset.weights)
+    print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
+    
     if loader.dataset.train:
       writer.add_scalars('Train/Acc',{'Acc': acc}, step)
       writer.add_scalars('Train/Class-Acc', {classes[k]: class_acc[k] for k in range(C)}, step)
