@@ -2,7 +2,7 @@ import sklearn.metrics as metrics
 import numpy as np
 import pandas as pd
 
-def isic18(scores, y, labels):
+def isic18(scores, y, weights, labels):
   """
   Metrics of ISIC challenge 2018.
 
@@ -26,14 +26,14 @@ def isic18(scores, y, labels):
   """
   # Score -> prediction
   y_pred = np.argmax(scores, axis=1)
-  print (scores.shape)
-  print(y_pred.shape)
+  # print (scores.shape)
+  # print(y_pred.shape)
   # prediction -> prediction matrix, shape (M, N)
   # where M = #Test Samples, N = #Classes
   prediction_matrix = None
   for k in range(len(labels)):
-    print(y_pred.shape)
-    print(np.where(y_pred == k, 1, 0), np.where(y_pred == k, 1, 0).shape)
+    # print(y_pred.shape)
+    # print(np.where(y_pred == k, 1, 0), np.where(y_pred == k, 1, 0).shape)
     p = np.array(np.where(y_pred == k, 1, 0))[:, None]
     if prediction_matrix is None:
       prediction_matrix = p
@@ -76,9 +76,9 @@ def isic18(scores, y, labels):
     mat = mat[None, :, :]
     if cmatrix_ele is None:
       cmatrix_ele = mat
-      print(cmatrix_ele.shape, mat.shape)
+      # print(cmatrix_ele.shape, mat.shape)
     else:
-      print(cmatrix_ele.shape, mat.shape)
+      # print(cmatrix_ele.shape, mat.shape)
       cmatrix_ele = np.vstack((cmatrix_ele, mat))
 
   # Compute Accuracy, Sensitivity, Specificity, Dice Coefficient, PPV and NPV
@@ -119,4 +119,6 @@ def isic18(scores, y, labels):
   columns = np.hstack((['mean'], labels))
   scoring = pd.DataFrame(scoring, index=index, columns=columns)
 
-  return scoring
+  print(scoring)
+
+  aggregate = metrics.balanced_accuracy_score(y_true=y, y_pred=y_pred, sample_weight=weights)

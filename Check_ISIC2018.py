@@ -57,10 +57,12 @@ def check(loader, model, step=0):
         y_truth = y.numpy()
       else:
         y_truth = np.hstack((y_truth, y.numpy()))
-  print(scores.shape)
-  print(y_truth.shape)
-  scoring = metrics.isic18(scores, y_truth, np.array(['MEL', 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']))
-  print (scoring)
+  classes = np.array(loader.dataset.classses)
+  weights = loader.dataset.weights
+  # print(scores.shape)
+  # print(y_truth.shape)
+  metrics.isic18(scores, y_truth, weights, classes)
+  
 
 
 check(test_dataloader, model)
