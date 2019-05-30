@@ -16,7 +16,7 @@ from tools import metrics
 
 # Model to check.
 # NEED MODIFY.
-modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/40epochs.pkl'
+modelpath = '/data0/jianfei/models/Resnet34_ISIC2018/20epochs.pkl'
 model = Resnet.Resnet34()
 # END OF NEED MODIFY.
 
