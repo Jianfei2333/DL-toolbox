@@ -37,7 +37,7 @@ def check(loader, model, step=0):
   """
   print ("Checking on test dataset.")
 
-  device='cuda:0'
+  device=os.environ['device']
 
   model = model.to(device=device)
   model.eval()

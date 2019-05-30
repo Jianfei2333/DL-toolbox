@@ -122,3 +122,5 @@ def isic18(scores, y, weights, labels):
   print(scoring)
 
   aggregate = metrics.balanced_accuracy_score(y_true=y, y_pred=y_pred, sample_weight=weights)
+
+  print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
