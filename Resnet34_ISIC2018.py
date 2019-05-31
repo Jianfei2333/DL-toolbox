@@ -12,7 +12,7 @@ from Networks import Resnet
 
 # Data loader.
 # from DataUtils import cifar10
-from DataUtils import isic2018
+from DataUtils import isic2018_new as isic2018
 
 # Official packages.
 import torch
@@ -64,7 +64,7 @@ step=0
 # 下面开始进行主干内容
 
 # GOT DATA
-train_dataloader, val_dataloader, test_dataloader, sample, weights = isic2018.getdata()
+train_dataloader, val_dataloader, weights = isic2018.getdata()
 
 # DEFINE MODEL
 model = Resnet.Resnet34()
@@ -90,8 +90,6 @@ mtool.train(
   optimizer,
   train_dataloader,
   val_dataloader,
-  test_dataloader,
-  weights,
   PRETRAIN_EPOCHS,
   TRAIN_EPOCHS,
   step
