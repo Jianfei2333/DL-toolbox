@@ -2,7 +2,7 @@ import torch
 import os
 import numpy as np
 import pandas as pd
-from Utils.globaltb import writer
+from config.globaltb import writer
 import sklearn.metrics as metrics
 
 writer = writer()
