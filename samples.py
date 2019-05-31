@@ -5,9 +5,9 @@ globalconfig.run()
 globalconfig.update_filename(__file__)
 
 # Essential network building blocks.
-from Networks import TwoLayerFC
-from Networks import ThreeLayerConvNet
-from Networks import LinearReLU
+from Networks.Nets import TwoLayerFC
+from Networks.Nets import ThreeLayerConvNet
+from Networks.Blocks import LinearReLU
 
 # Data loader.
 from DataUtils import cifar10

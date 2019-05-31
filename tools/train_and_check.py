@@ -7,7 +7,7 @@ import sklearn.metrics as metrics
 
 writer = writer()
 
-def checkAcc(loader, model, step=0):
+def check(loader, model, step=0):
   """
   Check the accuracy of the model on validation set / test set.
 
@@ -148,7 +148,7 @@ def train(
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         print('Epoch %d,Iteration %d (total epoch %d, iteration %d): loss = %.4f' % (e+1, t+1, e+1+pretrain_epochs, step, loss.item()))
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-        checkAcc(val_dataloader, model, step)
+        check(val_dataloader, model, step)
         print()
 
     if (e+1) % save_every == 0:

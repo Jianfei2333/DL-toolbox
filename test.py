@@ -1,8 +1,8 @@
-from Networks import Flatten
-from Networks import LinearReLU
-from Networks import ResBlock
-from Networks import ThreeLayerConvNet
-from Networks import TwoLayerFC
+from Networks.Blocks import Flatten
+from Networks.Blocks import LinearReLU
+from Networks.Blocks import ResBlock
+from Networks.Nets import ThreeLayerConvNet
+from Networks.Nets import TwoLayerFC
 
 Flatten.test_Flatten()
 LinearReLU.test_LinearReLU()

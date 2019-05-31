@@ -7,10 +7,10 @@ globalconfig.run()
 globalconfig.update_filename(__file__)
 os.environ['batch-size'] = '128'
 
-from Networks import ResBlock as R
-from Networks import Resnet
-from Networks import Flatten
-from Networks import LinearReLU
+from Networks.Blocks import ResBlock as R
+from Networks.Nets import Resnet
+from Networks.Blocks import Flatten
+from Networks.Blocks import LinearReLU
 from DataUtils import isic2018
 from tools import metrics
 
