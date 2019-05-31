@@ -49,7 +49,6 @@ def checkAcc(loader, model, step=0):
     num_samples = y_pred.shape[0]
     acc = float(num_correct) / num_samples
 
-    print(y_true.shape, y_pred.shape)
     confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
     TP = confusion_matrix.diagonal()
     Prediction = confusion_matrix.sum(axis=1) # row sum
@@ -63,18 +62,18 @@ def checkAcc(loader, model, step=0):
     )
 
     # Print result
-    acc_prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
+    acc_prompt = 'Total Accuracy: \nGot %d / %d correct: %.2f%% \n' % (num_correct, num_samples, 100 * acc)
     print(acc_prompt)
 
     sample_weight = [1/loader.dataset.weights[i] for i in y_true]
     aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
-    balanced_acc_prompt = 'Balanced Multiclass Accuracy: %.4f' % aggregate
+    balanced_acc_prompt = '\nBalanced Multiclass Accuracy: %.4f \n' % aggregate
     print (balanced_acc_prompt)
 
-    conf_mat_prompt = 'The confusion matrix:'
+    conf_mat_prompt = '\nThe confusion matrix:\n'
     print (pd.DataFrame(confusion_matrix, index=classes, columns=classes))
 
-    pre_recall_prompt = 'Precision and Recall of each calss:'
+    pre_recall_prompt = '\nPrecision and Recall of each calss:\n'
     print(pre_recall_prompt)
     print(df_class_precision_recall)
 
