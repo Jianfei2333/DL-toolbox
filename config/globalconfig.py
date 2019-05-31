@@ -17,7 +17,7 @@ def run():
       logdir: Tensorboard log dir.
   """
   user = os.popen('whoami').readline()
-  from config import deviceSelector as d
+  from tools import deviceSelector as d
 
   if user.find('jianfei') == -1:
     os.environ['where_am_i'] = 'pc'

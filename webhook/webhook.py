@@ -1,6 +1,7 @@
 import http.server as server
 import cgi
 import json
+import time
 import os
 
 PORT = 10000
@@ -28,6 +29,7 @@ class WebhookHandler(server.BaseHTTPRequestHandler):
       print ('It\'s me!')
       os.system('git stash && git pull && git stash pop')
       print ('Sync complete!')
+      print ('Time:', time.asctime().replace(' ', '-'))
       self.send_response(200)
       self.end_headers()
       return
