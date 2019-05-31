@@ -49,7 +49,11 @@ def check(loader, model, step=0):
     num_samples = y_pred.shape[0]
     acc = float(num_correct) / num_samples
 
-    confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
+    # The sklearn.metrics.confusion_matrix is transposed compared with
+    #   the 'Confusion matrix' in our mind, which is, prediction in each
+    #   row, and condition in each column. The sklearn.metrics.confusion_matrix
+    #   is prediction in each column, and condition in each row.
+    confusion_matrix = metrics.confusion_matrix(y_true, y_pred).T
     TP = confusion_matrix.diagonal()
     Prediction = confusion_matrix.sum(axis=1) # row sum
     Condition = confusion_matrix.sum(axis=0) # column sum
