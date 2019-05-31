@@ -18,21 +18,13 @@ def checkAcc(loader, model, step=0):
   Return:
     Nothing, but print the accuracy result to console.
   """
-  if loader.dataset.train:
-    print('Checking accuracy on validation set.')
-  else:
-    print('##############################')
-    print('Checking accuracy on test set.')
-    print('##############################')
+  print ('Checking accuracy on validation set.')
 
   device=os.environ['device']
 
   classes = loader.dataset.classes
   C = len(classes)
-  num_correct = 0
-  num_samples = 0
-  class_correct = np.zeros(C)
-  class_samples = np.zeros(C)
+  
   model.eval()
   with torch.no_grad():
     y_pred = None
@@ -42,51 +34,62 @@ def checkAcc(loader, model, step=0):
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
       _, preds = scores.max(1)
+      # Prediction array
       if y_pred is None:
         y_pred = preds.cpu().numpy()
       else:
         y_pred = np.hstack((y_pred, preds.cpu().numpy()))
-
+      # Groundtruth array
       if y_true is None:
         y_true = y.cpu().numpy()
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
-      num_correct += (preds == y).sum()
-      num_samples += preds.size(0)
-      for k in range(C):
-        cond_tensor = torch.where(y == k, torch.ones_like(y), torch.zeros_like(y))
-        pred_tensor = torch.where(preds == k, torch.ones_like(preds), torch.zeros_like(preds))
-        class_correct[k] += torch.where(cond_tensor == pred_tensor, torch.ones_like(preds), torch.zeros_like(preds)).sum().item()
-        class_samples[k] += y.shape[0]
 
+    num_correct = (y_pred == y_true).sum()
+    num_samples = y_pred.shape[0]
     acc = float(num_correct) / num_samples
-    class_acc = class_correct / class_samples
-    # Add mean value
-    classes = np.hstack((['mean'], classes))
-    class_acc = np.hstack(([np.mean(class_acc)], class_acc))
+
+    confusion_matrix = metrics.confusion_matrix(y, y_pred)
+    TP = confusion_matrix.diagonal()
+    Prediction = confusion_matrix.sum(axis=1) # row sum
+    Condition = confusion_matrix.sum(axis=0) # column sum
+    recall = TP / Condition
+    precision = TP / Prediction
+    df_class_precision_recall = pd.DataFrame(
+      np.vstack((precision, recall)),
+      index=np.array(['precision', 'recall']),
+      columns=np.array(classes)
+    )
+
     # Print result
-    prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
-    print(prompt)
-    class_acc_df = pd.DataFrame(class_acc[None, :], index=['Acc'], columns=classes)
-    print (class_acc_df)
-    
+    acc_prompt = 'Got %d / %d correct: %.2f%%' % (num_correct, num_samples, 100 * acc)
+    print(acc_prompt)
+
     sample_weight = [1/loader.dataset.weights[i] for i in y_true]
     aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
-    print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
+    balanced_acc_prompt = 'Balanced Multiclass Accuracy: %.4f' % aggregate
+    print (balanced_acc_prompt)
 
-    if loader.dataset.train:
-      writer.add_scalars('Train/Acc',{'Acc': acc}, step)
-      writer.add_scalars('Train/Class-Acc', {classes[k]: class_acc[k] for k in range(C)}, step)
-      writer.add_scalars('Train/BalancedAcc', {'Acc': aggregate}, step)
-    else:
-      writer.add_text(os.environ['filename'], prompt + 'on TEST set.', step)
+    conf_mat_prompt = 'The confusion matrix:'
+    print (pd.DataFrame(confusion_matrix, index=classes, columns=classes))
+
+    pre_recall_prompt = 'Precision and Recall of each calss:'
+    print(pre_recall_prompt)
+    print(df_class_precision_recall)
+
+    writer.add_scalars('Train/Acc',{'Acc': acc}, step)
+    for i in range(C):
+      writer.add_scalars('Train/'+classes[i], {
+        'Precision': precision[i],
+        'Recall': recall[i]
+      })
+    writer.add_scalars('Train/BalancedAcc', {'Acc': aggregate}, step)
+
 
 def train(
   model, optimizer,
   train_dataloader,
   val_dataloader,
-  test_dataloader,
-  weights=None,
   pretrain_epochs=0,
   epochs=1,
   step=0
@@ -108,42 +111,50 @@ def train(
     Nothing, but prints model accuracies during training.
   """
   device = os.environ['device']
-
   model = model.to(device=device)
+
+  # Weights: The number of samples in each class.
+  # Train_weights: 1/Weights, with normalization.
+  weights = train_dataloader.dataset.weights
+  train_weights = 1 / weights
+  s = np.sum(train_weights)
+  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
+
+  # Print every n steps.
+  print_every = int(os.environ['print_every'])
+  # Save model every n epochs.
+  save_every = int(os.environ['save_every'])
+
   for e in range(epochs):
     for t, (x, y) in enumerate(train_dataloader):
       model.train()
       x = x.to(device=device, dtype=torch.float32)
       y = y.to(device=device, dtype=torch.long)
-      weights = weights.to(device=device, dtype=torch.float32)
 
+      # Forward prop.
       scores = model(x)
-      if weights is not None:
-        loss = torch.nn.functional.cross_entropy(scores, y, weights)
-      else:
-        loss = torch.nn.functional.cross_entropy(scores, y)
+      loss = torch.nn.functional.cross_entropy(scores, y, train_weights)
 
-      writer.add_scalars('Train/loss',{'loss': loss.item()}, step)
+      writer.add_scalars('Train/Loss',{'loss': loss.item()}, step)
       step += 1
 
+      # Back prop.
       optimizer.zero_grad()
-
       loss.backward()
-
       optimizer.step()
 
-      if t % int(os.environ['print_every']) == 0:
-        print('Iteration %d, loss = %.4f' % (t, loss.item()))
+      if t % print_every == 0:
+        print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
         checkAcc(val_dataloader, model, step)
         print()
 
-    if (e+1) % int(os.environ['save_every']) == 0:
-      if test_dataloader is not None:
-        checkAcc(test_dataloader, model, e+pretrain_epochs+1)
+    if (e+1) % save_every == 0:
       savepath = os.environ['savepath']
+      # Check if the savepath is valid.
       if not os.path.exists(savepath):
         os.mkdir(savepath)
         print ('Create dir', savepath)
+      # Save the model.
       torch.save({
         'state_dict': model.state_dict(),
         'episodes': step,
