@@ -146,7 +146,7 @@ def train(
 
       if (t+1) % print_every == 0:
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-        print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
+        print('Epoch %d,Iteration %d (total epoch %d, iteration %d): loss = %.4f' % (e+1, t+1, e+1+pretrain_epochs, step, loss.item()))
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         checkAcc(val_dataloader, model, step)
         print()
