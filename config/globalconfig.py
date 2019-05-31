@@ -7,14 +7,14 @@ def run():
   Run global configuration.
   
   Args:
-    None.
+    - None.
 
   Return:
     None, but set environment parameters.
-      where_am_i: 'pc' or 'lab', showing where this project is running.
-      datapath: Data dir.kk
-      device: Device configuration with auto recommendation, namely, 'cpu' or 'cuda:#id'
-      logdir: Tensorboard log dir.
+      - where_am_i: 'pc' or 'lab', showing where this project is running.
+      - datapath: Data dir.kk
+      - device: Device configuration with auto recommendation, namely, 'cpu' or 'cuda:#id'
+      - tb-logdir: Tensorboard log dir.
   """
   user = os.popen('whoami').readline()
   from tools import deviceSelector as d
@@ -23,15 +23,15 @@ def run():
     os.environ['where_am_i'] = 'pc'
     os.environ['datapath'] = '/home/huihui/Data/ISIC2018/'
     os.environ['device'] = 'cpu'
-    os.environ['logdir'] = '/home/huihui/Log/tensorboard-log/'
+    os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
     os.environ['savepath'] = '/home/huihui/Models/'
   else:
     os.environ['where_am_i'] = 'lab'
     os.environ['datapath'] = '/data0/share/ISIC2018/'
     os.environ['device'] = 'cuda:'+d.get_gpu_choice()
-    os.environ['logdir'] = '/data0/jianfei/tensorboard-log/'
+    os.environ['tb-logdir'] = '/data0/jianfei/tensorboard-log/'
     os.environ['savepath'] = '/data0/jianfei/models/'
-  os.environ['logdir'] += time.asctime().replace(' ', '-')
+  os.environ['tb-logdir'] += time.asctime().replace(' ', '-')
 
   print('Finish global configuration!')
 
@@ -44,15 +44,15 @@ def update_filename(file):
 
   Return:
     None, but set environment parameters.
-      logdir: logdir + '-' + filename
+      tb-logdir: tb-logdir + '-' + filename
       filename: String of entrance file name.(Without postfix '.py')
       savepath: savepath + filename + '/'
   """
   s = file.rfind('/')
   e = file.find('.')
   filename = file[s+1:e]
-  os.environ['logdir'] += '-'
-  os.environ['logdir'] += filename
+  os.environ['tb-logdir'] += '-'
+  os.environ['tb-logdir'] += filename
   os.environ['savepath'] += filename
   os.environ['savepath'] += '/'
   os.environ['filename'] = filename

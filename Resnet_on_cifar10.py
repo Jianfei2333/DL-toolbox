@@ -61,7 +61,7 @@ if continue_train:
   model.load_state_dict(model_checkpoint['state_dict'])
   print('Checkpoint restored!')
   step = model_checkpoint['episodes']
-  os.environ['logdir'] = model_checkpoint['logdir']
+  os.environ['tb-logdir'] = model_checkpoint['tb-logdir']
 
 
 # DEFINE OPTIMIZER

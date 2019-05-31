@@ -160,7 +160,7 @@ def train(
       torch.save({
         'state_dict': model.state_dict(),
         'episodes': step,
-        'logdir': os.environ['logdir']
+        'tb-logdir': os.environ['tb-logdir']
         },
         savepath + str(e+pretrain_epochs+1) + 'epochs.pkl'
       )
