@@ -87,12 +87,11 @@ def checkAcc(loader, model, step=0):
 
 
 def train(
-  model, optimizer,
+  model,
+  optimizer,
   train_dataloader,
   val_dataloader,
-  pretrain_epochs=0,
-  epochs=1,
-  step=0
+  epochs=1
 ):
   """
   Train a model with optimizer using PyTorch API.
@@ -110,6 +109,8 @@ def train(
   Returns:
     Nothing, but prints model accuracies during training.
   """
+  step = int(os.environ['step'])
+  pretrain_epochs = int(os.environ['pretrain-epochs'])
   device = os.environ['device']
   model = model.to(device=device)
 
@@ -143,7 +144,7 @@ def train(
       loss.backward()
       optimizer.step()
 
-      if t % print_every == 0:
+      if (t+1) % print_every == 0:
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
@@ -152,6 +153,7 @@ def train(
 
     if (e+1) % save_every == 0:
       savepath = os.environ['savepath']
+      savefilepath = savepath + str(e+pretrain_epochs+1) + 'epochs.pkl'
       # Check if the savepath is valid.
       if not os.path.exists(savepath):
         os.mkdir(savepath)
@@ -159,9 +161,9 @@ def train(
       # Save the model.
       torch.save({
         'state_dict': model.state_dict(),
-        'episodes': step,
+        'episodes': str(step),
         'tb-logdir': os.environ['tb-logdir']
         },
-        savepath + str(e+pretrain_epochs+1) + 'epochs.pkl'
+        savefilepath
       )
-      print ('Model save as', savepath + str(e+pretrain_epochs+1) + 'epochs.pkl')
+      print ('Model save as', savefilepath)
