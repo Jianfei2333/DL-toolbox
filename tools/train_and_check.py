@@ -18,7 +18,7 @@ def checkAcc(loader, model, step=0):
   Return:
     Nothing, but print the accuracy result to console.
   """
-  print ('Checking accuracy on validation set.')
+  print ('Checking accuracy on validation set.\n')
 
   device=os.environ['device']
 
@@ -144,7 +144,9 @@ def train(
       optimizer.step()
 
       if t % print_every == 0:
+        print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         print('Epoch %d, Iteration %d, loss = %.4f' % (e, t, loss.item()))
+        print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         checkAcc(val_dataloader, model, step)
         print()
 
