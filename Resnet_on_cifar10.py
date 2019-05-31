@@ -1,3 +1,8 @@
+# !!!
+# 远古版本，已弃用
+# 参见Resnet34_ISIC2018.py
+# !!!
+
 # Global environment setup.
 import os
 from config import globalconfig
@@ -5,8 +10,8 @@ globalconfig.run()
 globalconfig.update_filename(__file__)
 
 # Essential network building blocks.
-from Networks import ResBlock as R
-from Networks import Flatten
+from Networks.Blocks import ResBlock as R
+from Networks.Blocks import Flatten
 
 # Data loader.
 from DataUtils import cifar10

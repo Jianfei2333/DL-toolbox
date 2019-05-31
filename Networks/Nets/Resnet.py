@@ -1,7 +1,7 @@
 import torch.nn as nn
-from Networks import ResBlock as R
-from Networks import Flatten
-from Networks import LinearReLU
+from Networks.Blocks import ResBlock as R
+from Networks.Blocks import Flatten
+from Networks.Blocks import LinearReLU
 
 def Resnet34():
   return nn.Sequential(

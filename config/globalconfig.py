@@ -64,11 +64,11 @@ def update_filename(file):
 def update_parser_params(args):
   """
   """
-  os.environ['batch-size'] = args.batch_size
-  os.environ['print_every'] = args.print_every
-  os.environ['save_every'] = args.save_every
-  os.environ['pretrain-modelpath'] = os.environ['savepath']+args.pretrain+'epochs.pkl'
-  os.environ['pretrain-epochs'] = args.pretrain
+  os.environ['batch-size'] = args['batch_size']
+  os.environ['print_every'] = args['print_every']
+  os.environ['save_every'] = args['save_every']
+  os.environ['pretrain-modelpath'] = os.environ['savepath']+args['pretrain']+'epochs.pkl'
+  os.environ['pretrain-epochs'] = args['pretrain']
 
 def loadmodel(model):
   checkpoint = load(os.environ['pretrain-modelpath'])
