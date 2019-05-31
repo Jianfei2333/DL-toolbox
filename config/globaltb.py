@@ -20,5 +20,5 @@ def writer():
   Return:
     - writer: Tensorboard SummaryWriter with configuration.
   """
-  writer = SummaryWriter(log_dir=os.environ['logdir'])
+  writer = SummaryWriter(log_dir=os.environ['tb-logdir'])
   return writer

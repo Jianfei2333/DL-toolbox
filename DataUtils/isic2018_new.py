@@ -32,7 +32,7 @@ def getdata():
     weights[i] = np.where(labels == str(i), 1, 0).sum()
   data.weights = weights
 
-  batch = int(os.environ['batchsize'])
+  batch = int(os.environ['batch-size'])
   train_arr = np.array(np.load(datapath+'train.npy'), dtype='int')
   val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
 

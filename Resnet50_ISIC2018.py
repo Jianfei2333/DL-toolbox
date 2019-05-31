@@ -22,7 +22,7 @@ import torch.optim as optim
 # Training setup.
 os.environ['print_every'] = '10'
 os.environ['save_every'] = '10'
-os.environ['batchsize'] = '64'
+os.environ['batch-size'] = '64'
 TRAIN_EPOCHS=50
 LEARNING_RATE=1e-6
 
@@ -37,7 +37,7 @@ for arg in args:
     LEARNING_RATE=float(arg[16:])
     continue
   if arg.find('--batch-size=') != -1:
-    os.environ['batchsize'] = arg[13:]
+    os.environ['batch-size'] = arg[13:]
     continue
   if arg.find('--print-every=') != -1:
     os.environ['print_every='] = arg[14:]
