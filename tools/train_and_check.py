@@ -49,8 +49,8 @@ def checkAcc(loader, model, step=0):
     num_samples = y_pred.shape[0]
     acc = float(num_correct) / num_samples
 
-    print(y.shape, y_pred.shape)
-    confusion_matrix = metrics.confusion_matrix(y, y_pred)
+    print(y_true.shape, y_pred.shape)
+    confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
     TP = confusion_matrix.diagonal()
     Prediction = confusion_matrix.sum(axis=1) # row sum
     Condition = confusion_matrix.sum(axis=0) # column sum
