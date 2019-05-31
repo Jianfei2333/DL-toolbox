@@ -82,7 +82,7 @@ def checkAcc(loader, model, step=0):
       writer.add_scalars('Train/'+classes[i], {
         'Precision': precision[i],
         'Recall': recall[i]
-      })
+      }, step)
     writer.add_scalars('Train/BalancedAcc', {'Acc': aggregate}, step)
 
 
