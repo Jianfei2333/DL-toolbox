@@ -50,8 +50,7 @@ def getdata():
     if i == VAL_IND:
       val_ind = fold_ind[i]
     else:
-      train_ind = np.hstack((train_ind, fold_ind[i]))
-  
+      train_ind = np.hstack((train_ind, fold_ind[i])).astype('int')
   train_dataloader = DataLoader(data, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind))
   val_dataloader = DataLoader(data, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind))
 
