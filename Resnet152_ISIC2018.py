@@ -8,13 +8,11 @@ from config import globalconfig
 globalconfig.run()
 globalconfig.update_filename(__file__)
 globalconfig.update_parser_params(args)
-# args = vars(args)
 
 # Essential network building blocks.
 from Networks.Nets import Resnet
 
 # Data loader.
-# from DataUtils import cifar10
 from DataUtils import isic2018
 
 # Official packages.
