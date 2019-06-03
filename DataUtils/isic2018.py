@@ -20,11 +20,11 @@ def getdata():
     T.RandomResizedCrop((224,224)), # 随机裁剪后resize
     T.RandomHorizontalFlip(0.5), # 随机水平翻转
     T.RandomVerticalFlip(0.5), # 随机垂直翻转
-    T.RandomApply(T.RandomRotation(90), 0.5), # 随机旋转90/270度
-    T.RandomApply(T.RandomRotation(180), 0.25), # 随机旋转180度
-    T.RandomApply(T.ColorJitter(brightness=np.random.random()/5+0.9), 0.5), #随机调整图像亮度
-    T.RandomApply(T.ColorJitter(contrast=np.random.random()/5+0.9), 0.5), # 随机调整图像对比度
-    T.RandomApply(T.ColorJitter(saturation=np.random.random()/5+0.9), 0.5), # 随机调整图像饱和度
+    T.RandomApply([T.RandomRotation(90)], 0.5), # 随机旋转90/270度
+    T.RandomApply([T.RandomRotation(180)], 0.25), # 随机旋转180度
+    T.RandomApply([T.ColorJitter(brightness=np.random.random()/5+0.9)], 0.5), #随机调整图像亮度
+    T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
+    T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
     T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
   ])
