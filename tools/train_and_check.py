@@ -3,7 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 from config.globaltb import writer
+from tools.metrics import cmatrix, precision_recall, accuracy
 import sklearn.metrics as metrics
+import copy
 
 writer = writer()
 
@@ -45,56 +47,38 @@ def check(loader, model, step=0):
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
 
-    num_correct = (y_pred == y_true).sum()
-    num_samples = y_pred.shape[0]
-    acc = float(num_correct) / num_samples
-
-    # The sklearn.metrics.confusion_matrix is transposed compared with
-    #   the 'Confusion matrix' in our mind, which is, prediction in each
-    #   row, and condition in each column. The sklearn.metrics.confusion_matrix
-    #   is prediction in each column, and condition in each row.
-    confusion_matrix = metrics.confusion_matrix(y_true, y_pred).T
-    TP = confusion_matrix.diagonal()
-    Prediction = confusion_matrix.sum(axis=1) # row sum
-    Condition = confusion_matrix.sum(axis=0) # column sum
-    recall = TP / Condition
-    precision = TP / Prediction
-    df_class_precision_recall = pd.DataFrame(
-      np.vstack((precision, recall)),
-      index=np.array(['precision', 'recall']),
-      columns=np.array(classes)
-    )
+    met_acc = accuracy(y_true, y_pred)
+    met_confusion_matrix = cmatrix(y_true, y_pred, classes)
+    met_precision_recall = precision_recall(y_true, y_pred, classes)
+    met_balanced_acc_score = metrics.balanced_accuracy_score(y_true, y_pred)
 
     # Print result
-    acc_prompt = 'Total Accuracy: \nGot %d / %d correct: %.2f%% \n' % (num_correct, num_samples, 100 * acc)
-    print(acc_prompt)
+    print ('Acc:\t%.4f' % met_acc)
+    print()
+    print ('Balanced accuracy score:\t%.4f' % met_balanced_acc_score)
+    print()
+    print ('Confusion matrix:\t')
+    print (met_confusion_matrix)
+    print()
+    print ('Precision and Recall:\t')
+    print (met_precision_recall)
+    print()
 
-    sample_weight = [1/loader.dataset.weights[i] for i in y_true]
-    aggregate = metrics.balanced_accuracy_score(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
-    balanced_acc_prompt = '\nBalanced Multiclass Accuracy: %.4f \n' % aggregate
-    print (balanced_acc_prompt)
-
-    conf_mat_prompt = '\nThe confusion matrix:\n'
-    print (pd.DataFrame(confusion_matrix, index=classes, columns=classes))
-
-    pre_recall_prompt = '\nPrecision and Recall of each calss:\n'
-    print(pre_recall_prompt)
-    print(df_class_precision_recall)
-
-    writer.add_scalars('Train/Acc',{'Acc': acc}, step)
+    writer.add_scalars('Aggregate/Acc',{'Validation Acc': met_acc}, step)
     for i in range(C):
-      writer.add_scalars('Train/'+classes[i], {
-        'Precision': precision[i],
-        'Recall': recall[i]
+      writer.add_scalars('Multiclass/'+classes[i], {
+        'Precision': met_precision_recall[classes[i]][0],
+        'Recall': met_precision_recall[classes[i]][1]
       }, step)
-    writer.add_scalars('Train/BalancedAcc', {'Acc': aggregate}, step)
-
+    writer.add_scalars('Aggregate/BalancedAcc', {'Score': met_balanced_acc_score}, step)
+    
+    return met_balanced_acc_score
 
 def train(
   model,
+  dataloader,
   optimizer,
-  train_dataloader,
-  val_dataloader,
+  criterion,
   epochs=1
 ):
   """
@@ -113,6 +97,9 @@ def train(
   Returns:
     Nothing, but prints model accuracies during training.
   """
+  train_dataloader = dataloader['train']
+  val_dataloader = dataloader['val']
+
   step = int(os.environ['step'])
   pretrain_epochs = int(os.environ['pretrain-epochs'])
   device = os.environ['device']
@@ -130,7 +117,12 @@ def train(
   # Save model every n epochs.
   save_every = int(os.environ['save_every'])
 
+  best_model = copy.deepcopy(model.state_dict())
+  best_balance_acc = 0.0
+
   for e in range(epochs):
+    running_y = np.array([])
+    running_ypred = np.array([])
     for t, (x, y) in enumerate(train_dataloader):
       model.train()
       x = x.to(device=device, dtype=torch.float32)
@@ -138,7 +130,11 @@ def train(
 
       # Forward prop.
       scores = model(x)
-      loss = torch.nn.functional.cross_entropy(scores, y, train_weights)
+      _, preds = scores.max(1)
+      preds = preds.cpu().numpy()
+      running_ypred = np.hstack((running_ypred, preds))
+      running_y = np.hstack((running_y, y.cpu().numpy()))
+      loss = criterion(scores, y, train_weights)
 
       writer.add_scalars('Train/Loss',{'loss': loss.item()}, step)
       step += 1
@@ -148,12 +144,20 @@ def train(
       loss.backward()
       optimizer.step()
 
+      
       if (t+1) % print_every == 0:
+        met_acc = accuracy(running_y, running_ypred)
+        met_balanced_acc_score = metrics.balanced_accuracy_score(running_y, running_ypred)
+        writer.add_scalars('Aggregate/Acc',{'Train Acc': met_acc}, step)
+        writer.add_scalars('Aggregate/BalancedAcc', {'Train Score': met_balanced_acc_score}, step)
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-        print('Epoch %d,Iteration %d (total epoch %d, iteration %d): loss = %.4f' % (e+1, t+1, e+1+pretrain_epochs, step, loss.item()))
+        print('Epoch %d/%d, Step %d (Total %d/%d, %d):\nLoss:\t%.4f\nTraining acc\t%.4f\nTraining balanced score\t%.4f' % (e+1, epochs, t+1, e+1+pretrain_epochs, epochs+pretrain_epochs, step, loss.item(), met_acc, met_balanced_acc_score))
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-        check(val_dataloader, model, step)
+        res = check(val_dataloader, model, step)
         print()
+        if res > best_balance_acc:
+          best_model = copy.deepcopy(model.state_dict())
+          best_balance_acc = res
 
     if (e+1) % save_every == 0:
       savepath = os.environ['savepath']
@@ -162,7 +166,7 @@ def train(
       if not os.path.exists(savepath):
         os.mkdir(savepath)
         print ('Create dir', savepath)
-      # Save the model.
+      # Save the checkpoint.
       torch.save({
         'state_dict': model.state_dict(),
         'episodes': str(step),
@@ -171,3 +175,12 @@ def train(
         savefilepath
       )
       print ('Model save as', savefilepath)
+
+  torch.save({
+      'state_dict': best_model,
+      'episodes': str(step),
+      'tb-logdir': os.environ['tb-logdir'],
+      'epochs': str(e+pretrain_epochs+1)
+    },
+    os.environ['savepath'] + 'best.pkl'
+  )

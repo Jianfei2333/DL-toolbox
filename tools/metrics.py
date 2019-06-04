@@ -127,3 +127,33 @@ def isic18(scores, y, weights, labels):
   aggregate = metrics.balanced_accuracy_score(y_true=y, y_pred=y_pred, sample_weight=sample_weight)
 
   print ('Balanced Multiclass Accuracy: %.4f' % aggregate)
+
+def cmatrix(y_true, y_pred, classes):
+  # The sklearn.metrics.confusion_matrix is transposed compared with
+  #   the 'Confusion matrix' in our mind, which is, prediction in each
+  #   row, and condition in each column. The sklearn.metrics.confusion_matrix
+  #   is prediction in each column, and condition in each row.
+  confusion_matrix = metrics.confusion_matrix(y_true, y_pred).T
+  df_cmatrix = pd.DataFrame(confusion_matrix, index=classes, columns=classes)
+  
+  return df_cmatrix
+
+def precision_recall(y_true, y_pred, classes):
+  confusion_matrix = cmatrix(y_true, y_pred, classes).to_numpy()
+  TP = confusion_matrix.diagonal()
+  Prediction = confusion_matrix.sum(axis=1) # row sum
+  Condition = confusion_matrix.sum(axis=0) # column sum
+  recall = TP / Condition
+  precision = TP / Prediction
+  df_precision_recall = pd.DataFrame(
+    np.vstack((precision, recall)),
+    index=np.array(['precision', 'recall']),
+    columns=np.array(classes)
+  )
+  return df_precision_recall
+
+def accuracy(y_true, y_pred):
+  num_correct = (y_pred == y_true).sum()
+  num_total = y_pred.shape[0]
+  accuracy = float(num_correct) / num_total
+  return accuracy
