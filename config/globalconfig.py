@@ -67,13 +67,20 @@ def update_parser_params(args):
   os.environ['batch-size'] = args['batch_size']
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
-  os.environ['pretrain-modelpath'] = os.environ['savepath']+args['pretrain']+'epochs.pkl'
-  os.environ['pretrain-epochs'] = args['pretrain']
+  # os.environ['pretrain-modelpath'] = os.environ['savepath']+args['pretrain']+'epochs.pkl'
+  # os.environ['pretrain-epochs'] = args['pretrain']
 
 def loadmodel(model):
-  checkpoint = load(os.environ['pretrain-modelpath'])
+  # checkpoint = load(os.environ['pretrain-modelpath'])
+  checkpoint = load(os.environ['savepath']+'best.pkl')
   model.load_state_dict(checkpoint['state_dict'])
   print('Checkpoint restored!')
   os.environ['step'] = checkpoint['episodes']
   os.environ['tb-logdir'] = checkpoint['tb-logdir']
+  os.environ['pretrain-epochs'] = checkpoint['epochs']
+  return model
+
+def set_no_grad(model):
+  for param in model.parameters():
+    param.requires_grad = False
   return model

@@ -11,6 +11,7 @@ globalconfig.update_parser_params(args)
 
 # Essential network building blocks.
 from Networks.Nets import Resnet
+from torchvision import models
 
 # Data loader.
 from DataUtils import isic2018
@@ -26,14 +27,27 @@ import torch.optim as optim
 dataloader = isic2018.getdata()
 
 # DEFINE MODEL
-model = Resnet.Resnet152()
+model = models.resnet152(pretrained=True)
+model = globalconfig.set_no_grad(model)
+# Modify.
+num_fcin = model.fc.in_features
+model.fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
+
+# print (model)
 
 if args['continue']:
   model = globalconfig.loadmodel(model)
 
+print ('Params to learn:')
+params_to_update = []
+for name,param in model.named_parameters():
+  if param.requires_grad == True:
+    params_to_update.append(param)
+    print ('\t', name)
+
 # DEFINE OPTIMIZER
 # optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
-optimizer = optim.Adam(model.parameters(), lr=args['learning_rate'])
+optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
 
