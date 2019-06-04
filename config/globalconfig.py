@@ -37,6 +37,7 @@ def run():
   t = time.asctime().replace(' ', '-')
   os.environ['logfile-dir'] += t
   os.environ['tb-logdir'] += t
+  os.environ['pretrain-epochs'] = '0'
 
   print('Finish global configuration!')
 
