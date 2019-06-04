@@ -138,7 +138,7 @@ def train(
       running_y = np.hstack((running_y, y.cpu().numpy()))
       loss = criterion(scores, y, train_weights)
 
-      writer.add_scalars('Train/Loss',{'loss': loss.item()}, step)
+      writer.add_scalars('Aggregate/Loss',{'loss': loss.item()}, step)
       step += 1
 
       # Back prop.
