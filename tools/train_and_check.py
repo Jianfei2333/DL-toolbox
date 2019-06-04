@@ -2,6 +2,7 @@ import torch
 import os
 import numpy as np
 import pandas as pd
+import time
 from config.globaltb import writer
 from tools.metrics import cmatrix, precision_recall, accuracy
 import sklearn.metrics as metrics
@@ -97,6 +98,7 @@ def train(
   Returns:
     Nothing, but prints model accuracies during training.
   """
+  since = time.time()
   train_dataloader = dataloader['train']
   val_dataloader = dataloader['val']
 
@@ -151,6 +153,12 @@ def train(
         writer.add_scalars('Aggregate/Acc',{'Train Acc': met_acc}, step)
         writer.add_scalars('Aggregate/BalancedAcc', {'Train Score': met_balanced_acc_score}, step)
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
+        sec = time.time() - since
+        h = int(sec // 3600)
+        m = int((sec % 3600) // 60)
+        s = int((sec % 3600) % 3600)
+        elapse = "{} hours, {} minutes, {} seconds.".format(h,m,s)
+        print (time.asctime().replace(' ', '-'), ' Elapsed time:', elapse)
         print('Epoch %d/%d, Step %d (Total %d/%d, %d):\nLoss:\t%.4f\nTraining acc\t%.4f\nTraining balanced score\t%.4f' % (e+1, epochs, t+1, e+1+pretrain_epochs, epochs+pretrain_epochs, step, loss.item(), met_acc, met_balanced_acc_score))
         print ('* * * * * * * * * * * * * * * * * * * * * * * *')
         res = check(val_dataloader, model, step)
