@@ -156,7 +156,7 @@ def train(
         sec = time.time() - since
         h = int(sec // 3600)
         m = int((sec % 3600) // 60)
-        s = int((sec % 3600) % 3600)
+        s = int((sec % 3600) % 60)
         elapse = "{} hours, {} minutes, {} seconds.".format(h,m,s)
         print (time.asctime().replace(' ', '-'), ' Elapsed time:', elapse)
         print('Epoch %d/%d, Step %d (Total %d/%d, %d):\nLoss:\t%.4f\nTraining acc\t%.4f\nTraining balanced score\t%.4f' % (e+1, epochs, t+1, e+1+pretrain_epochs, epochs+pretrain_epochs, step, loss.item(), met_acc, met_balanced_acc_score))
