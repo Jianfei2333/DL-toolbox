@@ -159,5 +159,5 @@ def Resnet152():
     Flatten.Layer(),
     # nn.Linear(2048, 1000) # OVER
     LinearReLU.Model(2048, 1000), 
-    nn.Linear(1000,7)
+    nn.Linear(1000,8)
   )
