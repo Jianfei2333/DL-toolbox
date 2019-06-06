@@ -19,22 +19,48 @@ def getdata():
   """
   print ("Collecting data ...")
 
-  transform = T.Compose([
-    T.Resize((224,224)),
-    T.ToTensor(),
-    T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
-  ])
+  transform = {
+    'train': T.Compose([
+      T.Resize((600,600)), # 放大
+      T.RandomResizedCrop((224,224)), # 随机裁剪后resize
+      T.RandomHorizontalFlip(0.5), # 随机水平翻转
+      T.RandomVerticalFlip(0.5), # 随机垂直翻转
+      T.RandomApply([T.RandomRotation(90)], 0.5), # 随机旋转90/270度
+      T.RandomApply([T.RandomRotation(180)], 0.25), # 随机旋转180度
+      T.RandomApply([T.ColorJitter(brightness=np.random.random()/5+0.9)], 0.5), #随机调整图像亮度
+      T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
+      T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
+      T.ToTensor(),
+      T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
+    ]), 
+    'val': T.Compose([
+      T.Resize((224,224)), # 放大
+      T.CenterCrop((224,224)),
+      # T.RandomResizedCrop((224,224)), # 随机裁剪后resize
+      # T.RandomHorizontalFlip(0.5), # 随机水平翻转
+      # T.RandomVerticalFlip(0.5), # 随机垂直翻转
+      # T.RandomApply([T.RandomRotation(90)], 0.5), # 随机旋转90/270度
+      # T.RandomApply([T.RandomRotation(180)], 0.25), # 随机旋转180度
+      # T.RandomApply([T.ColorJitter(brightness=np.random.random()/5+0.9)], 0.5), #随机调整图像亮度
+      # T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
+      # T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
+      T.ToTensor(),
+      T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
+    ])
+  }
 
-  data = dset.ImageFolder(datapath+'Data', transform=transform)
+  traindata = dset.ImageFolder(datapath+'Data', transform=transform['train'])
+  valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   
-  labels = np.array(data.imgs)[:, 1]
-  C = len(data.classes)
+  labels = np.array(traindata.imgs)[:, 1]
+  C = len(traindata.classes)
 
   # weights: The number of images in different classes
   weights = np.zeros(C)
   for i in range(C):
     weights[i] = np.where(labels == str(i), 1, 0).sum()
-  data.weights = weights
+  traindata.weights = weights
+  valdata.weights = weights
 
   batch = int(os.environ['batch-size'])
   # Read fold infomation.
@@ -51,9 +77,12 @@ def getdata():
       val_ind = fold_ind[i]
     else:
       train_ind = np.hstack((train_ind, fold_ind[i])).astype('int')
-  train_dataloader = DataLoader(data, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind))
-  val_dataloader = DataLoader(data, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind))
+  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind))
+  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind))
 
   print ("Collect data complete!\n")
 
-  return (train_dataloader, val_dataloader, weights)
+  return {
+    'train': train_dataloader,
+    'val': val_dataloader
+  }
