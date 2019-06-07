@@ -12,10 +12,11 @@ globalconfig.update_parser_params(args)
 # Essential network building blocks.
 from Networks.Nets import Resnet
 from torchvision import models
+from efficientnet_pytorch import EfficientNet
 
 # Data loader.
 import torchvision.transforms as T
-from DataUtils import isic2018
+from DataUtils import isic2019 as data
 
 # Official packages.
 import torch
@@ -27,8 +28,8 @@ import numpy as np
 
 transform = {
   'train': T.Compose([
-    T.Resize((600,600)), # 放大
-    T.RandomResizedCrop((224,224)), # 随机裁剪后resize
+    T.Resize((500,500)), # 放大
+    T.RandomResizedCrop((300,300)), # 随机裁剪后resize
     T.RandomHorizontalFlip(0.5), # 随机水平翻转
     T.RandomVerticalFlip(0.5), # 随机垂直翻转
     T.RandomApply([T.RandomRotation(90)], 0.5), # 随机旋转90/270度
@@ -37,11 +38,11 @@ transform = {
     T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
   ]), 
   'val': T.Compose([
-    T.Resize((224,224)), # 放大
-    T.CenterCrop((224,224)),
+    T.Resize((300,300)), # 放大
+    T.CenterCrop((300,300)),
     # T.RandomResizedCrop((224,224)), # 随机裁剪后resize
     # T.RandomHorizontalFlip(0.5), # 随机水平翻转
     # T.RandomVerticalFlip(0.5), # 随机垂直翻转
@@ -51,18 +52,18 @@ transform = {
     # T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     # T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
   ])
 }
 
 # GOT DATA
-dataloader = isic2018.getdata(transform)
+dataloader = data.getdata(transform)
 
 # DEFINE MODEL
-model = models.resnet152(pretrained=True)
+model = EfficientNet.from_pretrained('efficientnet-b3')
 # Modify.
-num_fcin = model.fc.in_features
-model.fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
+num_fcin = model._fc.in_features
+model._fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
 
 # print (model)
 
@@ -72,7 +73,6 @@ if args['continue']:
 print ('Params to learn:')
 params_to_update = []
 for name,param in model.named_parameters():
-  print('name:', name)
   if param.requires_grad == True:
     params_to_update.append(param)
     print ('\t', name)
