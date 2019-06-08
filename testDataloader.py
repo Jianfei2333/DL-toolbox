@@ -51,11 +51,12 @@ for num_workers in range(0, 50, 5):
   start = time.time()
   for epoch in range(5):
     d = data.getdata(transform, kwargs)
-    print (d['train'])
     for batch_idx, (data, target) in enumerate(d['train']):
-      print(batch_idx)
+      print("Epoch:{}, step:{}".format(epoch, batch_idx))
       pass
   end = time.time()
-  prompt += "\nFinish with:{} second, num_workers={}".format(end-start, num_workers)
-  print('Finish one epoch.')
+  p = "\nFinish with:{} second, num_workers={}".format(end-start, num_workers)
+  prompt += p
+  print(p)
+  print('Finish one test.')
 print (prompt)
