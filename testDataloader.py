@@ -49,7 +49,7 @@ for num_workers in range(0, 50, 5):
   }
 
   start = time.time()
-  for epoch in range(5):
+  for epoch in range(1):
     d = data.getdata(transform, kwargs)
     for batch_idx, (dat, target) in enumerate(d['train']):
       print("Epoch:{}, step:{}".format(epoch, batch_idx))
