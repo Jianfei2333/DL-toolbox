@@ -13,6 +13,8 @@ globalconfig.update_parser_params(args)
 
 from DataUtils import isic2019 as data
 
+print('Testing data load...')
+prompt = ''
 for num_workers in range(0, 50, 5):
   kwargs = {'num_workers': num_workers, 'pin_memory': False} if os.environ['device'] != 'cpu' else {}
   
@@ -47,10 +49,13 @@ for num_workers in range(0, 50, 5):
   }
 
   start = time.time()
-  print('Testing data load...')
   for epoch in range(5):
     d = data.getdata(transform, kwargs)
+    print (d['train'])
     for batch_idx, (data, target) in enumerate(d['train']):
+      print(batch_idx)
       pass
   end = time.time()
-  print ("Finish with:{} second, num_workers={}".format(end-start, num_workers))
+  prompt += "\nFinish with:{} second, num_workers={}".format(end-start, num_workers)
+  print('Finish one epoch.')
+print (prompt)
