@@ -11,7 +11,7 @@ import torchvision.datasets as dset
 
 datapath = os.environ['datapath']
 
-def getdata(transform):
+def getdata(transform, kwargs={}):
   """
   norm1:
     mean = [0.6678, 0.5298, 0.5244]
@@ -47,8 +47,8 @@ def getdata(transform):
       val_ind = fold_ind[i]
     else:
       train_ind = np.hstack((train_ind, fold_ind[i])).astype('int')
-  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind))
-  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind))
+  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind), **kwargs)
+  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind), **kwargs)
 
   print ("Collect data complete!\n")
 
