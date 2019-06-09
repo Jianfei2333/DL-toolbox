@@ -24,6 +24,8 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
+torch.set_num_threads(1)
+
 # 下面开始进行主干内容
 
 transform = {
@@ -57,7 +59,7 @@ transform = {
 }
 
 # GOT DATA
-dataloader = data.getdata(transform)
+dataloader = data.getdata(transform, {'num_workers': 4, 'pin_memory': True})
 
 # DEFINE MODEL
 model = EfficientNet.from_pretrained('efficientnet-b3')
@@ -70,6 +72,8 @@ model._fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
 if args['continue']:
   model = globalconfig.loadmodel(model)
 
+model = model.to(device=os.environ['device'])
+
 print ('Params to learn:')
 params_to_update = []
 for name,param in model.named_parameters():
@@ -78,8 +82,8 @@ for name,param in model.named_parameters():
     print ('\t', name)
 
 # DEFINE OPTIMIZER
-# optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
-optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
+optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
+# optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
 
