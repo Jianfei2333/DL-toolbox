@@ -82,8 +82,8 @@ for name,param in model.named_parameters():
     print ('\t', name)
 
 # DEFINE OPTIMIZER
-optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
-# optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
+# optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
+optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
 

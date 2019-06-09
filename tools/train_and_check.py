@@ -146,7 +146,6 @@ def train(
       loss.backward()
       optimizer.step()
 
-      
       if (t+1) % print_every == 0:
         met_acc = accuracy(running_y, running_ypred)
         met_balanced_acc_score = metrics.balanced_accuracy_score(running_y, running_ypred)
