@@ -59,6 +59,7 @@ transform = {
 }
 
 # GOT DATA
+torch.cuda.set_device(os.environ['device'])
 dataloader = data.getdata(transform, {'num_workers': 4, 'pin_memory': True})
 
 # DEFINE MODEL
