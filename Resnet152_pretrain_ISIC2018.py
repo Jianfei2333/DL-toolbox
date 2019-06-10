@@ -15,7 +15,7 @@ from torchvision import models
 
 # Data loader.
 import torchvision.transforms as T
-from DataUtils import isic2018
+from DataUtils import isic2018 as data
 
 # Official packages.
 import torch
@@ -56,7 +56,7 @@ transform = {
 }
 
 # GOT DATA
-dataloader = isic2018.getdata(transform)
+dataloader = data.getdata(transform)
 
 # DEFINE MODEL
 model = models.resnet152(pretrained=True)
