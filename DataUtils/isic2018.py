@@ -11,7 +11,7 @@ import torchvision.datasets as dset
 
 datapath = os.environ['datapath']
 
-def getdata(transform):
+def getdata(transform, kwargs={'num_workers': 4, 'pin_memory': True}):
 
   print ("Collecting data ...")
 
@@ -32,8 +32,8 @@ def getdata(transform):
   train_arr = np.array(np.load(datapath+'train.npy'), dtype='int')
   val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
 
-  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr))
-  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_arr))
+  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr), **kwargs)
+  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_arr), **kwargs)
 
   print ("Collect data complete!\n")
 

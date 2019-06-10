@@ -16,7 +16,7 @@ from efficientnet_pytorch import EfficientNet
 
 # Data loader.
 import torchvision.transforms as T
-from DataUtils import isic2019 as data
+from DataUtils import isic2018 as data
 
 # Official packages.
 import torch
@@ -38,7 +38,7 @@ transform = {
     T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
+    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
   ]), 
   'val': T.Compose([
     T.Resize((300,300)), # 放大
@@ -52,7 +52,7 @@ transform = {
     # T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     # T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.6678, 0.5298, 0.5244), std=(0.2527, 0.1408, 0.1364))
+    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
   ])
 }
 
