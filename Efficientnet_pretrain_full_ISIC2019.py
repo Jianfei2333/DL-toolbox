@@ -24,8 +24,6 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
-torch.set_num_threads(1)
-
 # 下面开始进行主干内容
 
 transform = {
@@ -59,7 +57,6 @@ transform = {
 }
 
 # GOT DATA
-torch.cuda.set_device(os.environ['device'])
 dataloader = data.getdata(transform, {'num_workers': 4, 'pin_memory': True})
 
 # DEFINE MODEL
