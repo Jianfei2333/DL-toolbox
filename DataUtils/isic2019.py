@@ -11,7 +11,7 @@ import torchvision.datasets as dset
 
 datapath = os.environ['datapath']
 
-def getdata(transform, kwargs={}):
+def getdata(transform, kwargs={'num_workers': 4, 'pin_memory': True}):
   """
   norm1:
     mean = [0.6678, 0.5298, 0.5244]

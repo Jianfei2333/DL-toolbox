@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from torch import load
+import torch
 
 def run():
   """
@@ -17,6 +18,8 @@ def run():
       - device: Device configuration with auto recommendation, namely, 'cpu' or 'cuda:#id'
       - tb-logdir: Tensorboard log dir.
   """
+
+  # Global environment variables.
   user = os.popen('whoami').readline()
   from tools import deviceSelector as d
   os.environ['step'] = '0'
@@ -38,6 +41,10 @@ def run():
   os.environ['logfile-dir'] += t
   os.environ['tb-logdir'] += t
   os.environ['pretrain-epochs'] = '0'
+  
+  # Some global restricts.
+  torch.cuda.set_device(os.environ['device'])
+  torch.set_num_threads(1)
 
   print('Finish global configuration!')
 
