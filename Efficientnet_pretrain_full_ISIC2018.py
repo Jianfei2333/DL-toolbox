@@ -11,6 +11,7 @@ globalconfig.update_parser_params(args)
 
 # Essential network building blocks.
 from Networks.Nets import Resnet
+from Networks.Losses import RecallWeightedCrossEntropy
 from torchvision import models
 from efficientnet_pytorch import EfficientNet
 
@@ -83,7 +84,9 @@ for name,param in model.named_parameters():
 optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
 # optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
 
-criterion = nn.functional.cross_entropy
+# criterion = nn.functional.cross_entropy
+criterion = RecallWeightedCrossEntropy.recall_cross_entropy
+
 
 # Useful tools.
 from tools import train_and_check as mtool
