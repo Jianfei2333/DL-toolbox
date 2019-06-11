@@ -8,7 +8,7 @@ class RecallWeightedCrossEntropy(nn.Module):
 
   def forward(self, scores, y):
     _, pred = scores.max(1)
-    recall_weights = weights[pred]
+    recall_weights = self.weights[pred]
     exp_scores = torch.exp(scores)
     softmax = exp_scores[:, pred].diagonal() / exp_scores.sum(1)
     cross_entropy = -torch.log(softmax)
