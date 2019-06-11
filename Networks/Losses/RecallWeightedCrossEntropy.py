@@ -3,6 +3,7 @@ import torch.nn as nn
 
 class RecallWeightedCrossEntropy(nn.Module):
   def __init__(self, weights):
+    super(RecallWeightedCrossEntropy, self).__init__()
     self.weights = weights
 
   def forward(self, scores, y):
