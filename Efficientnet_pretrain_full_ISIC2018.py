@@ -84,8 +84,8 @@ for name,param in model.named_parameters():
 optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
 # optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
 
-# criterion = nn.functional.cross_entropy
-criterion = RecallWeightedCrossEntropy.recall_cross_entropy
+criterion = nn.functional.cross_entropy
+# criterion = RecallWeightedCrossEntropy.recall_cross_entropy
 
 
 # Useful tools.
