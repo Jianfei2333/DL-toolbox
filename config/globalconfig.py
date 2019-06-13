@@ -43,7 +43,8 @@ def run():
   os.environ['pretrain-epochs'] = '0'
   
   # Some global restricts.
-  torch.cuda.set_device(os.environ['device'])
+  if os.environ['device'] != 'cpu':
+    torch.cuda.set_device(os.environ['device'])
   torch.set_num_threads(1)
 
   print('Finish global configuration!')
