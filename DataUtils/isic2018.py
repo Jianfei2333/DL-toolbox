@@ -16,6 +16,7 @@ def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 4, 'pin
   print ("Collecting data ...")
 
   traindata = dset.ImageFolder(datapath+'Data', transform=transform['train'])
+  train4valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   
   labels = np.array(traindata.imgs)[:, 1]
@@ -33,11 +34,13 @@ def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 4, 'pin
   val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
 
   train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr), **kwargs)
+  train4val_dataloader = DataLoader(train4valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr), **kwargs)
   val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_arr), **kwargs)
 
   print ("Collect data complete!\n")
 
   return {
     'train': train_dataloader,
+    'train4val': train4val_dataloader,
     'val': val_dataloader
   }
