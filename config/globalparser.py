@@ -7,5 +7,5 @@ def getparser():
   parser.add_argument('-c', '--continue', help='Continue training, default False.', default=False, action='store_true')
   parser.add_argument('-e', '--epochs', type=int, help='Epochs to train, default 20.', default=20)
   parser.add_argument('--save-every', help='Save the model every n epochs, default 5.', default='5')
-  parser.add_argument('--print-every', help='Print the model every n steps, default 10.', default='10')
+  parser.add_argument('--print-every', help='Print the model every n steps, default 10.', default='50')
   return parser
