@@ -61,7 +61,7 @@ transform = {
   ])
 }
 
-print(os.environ)
+
 # GOT DATA
 dataloader = data.getdata(transform)
 
