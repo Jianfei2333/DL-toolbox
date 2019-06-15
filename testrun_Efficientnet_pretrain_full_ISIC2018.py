@@ -66,7 +66,7 @@ dataloader = data.getdata(transform)
 model = EfficientNet.from_pretrained('efficientnet-b3')
 # Modify.
 num_fcin = model._fc.in_features
-model._fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
+model._fc = nn.Linear(num_fcin, len(dataloader[0]['train'].dataset.classes))
 
 # print (model)
 
