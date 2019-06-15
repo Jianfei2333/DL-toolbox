@@ -83,7 +83,7 @@ params_to_update = []
 for name,param in model.named_parameters():
   if param.requires_grad == True:
     params_to_update.append(param)
-    print ('\t', name)
+    # print ('\t', name)
 
 # DEFINE OPTIMIZER
 optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
