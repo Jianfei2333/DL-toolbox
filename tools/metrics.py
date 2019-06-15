@@ -145,10 +145,12 @@ def precision_recall(y_true, y_pred, classes):
   Condition = confusion_matrix.sum(axis=0) # column sum
   recall = TP / Condition
   precision = TP / Prediction
+  mat_precision_recall = np.vstack((precision, recall))
+  mat_precision_recall = np.hstack((np.mean(mat_precision_recall, axis=1)[:, None], mat_precision_recall))
   df_precision_recall = pd.DataFrame(
-    np.vstack((precision, recall)),
+    mat_precision_recall,
     index=np.array(['precision', 'recall']),
-    columns=np.array(classes)
+    columns=np.append('mean', classes)
   )
   return df_precision_recall
 

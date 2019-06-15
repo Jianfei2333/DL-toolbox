@@ -60,30 +60,27 @@ transform = {
 }
 
 # GOT DATA
-dataloader = data.getdata(transform)
+dataloaders = data.getdata(transform)
 
 # DEFINE MODEL
-model = EfficientNet.from_pretrained('efficientnet-b3')
-# Modify.
-num_fcin = model._fc.in_features
-model._fc = nn.Linear(num_fcin, len(dataloader[0]['train'].dataset.classes))
+models = [None, None, None, None, None]
+for i in range(5):
+  models[i] = EfficientNet.from_pretrained('efficientnet-b3')
+  # Modify.
+  num_fcin = models[i]._fc.in_features
+  model._fc = nn.Linear(num_fcin, len(dataloaders[i]['train'].dataset.classes))
 
 # print (model)
 
 if args['continue']:
-  model = globalconfig.loadmodel(model)
-else:
-  model.step=0
-  model.epochs=0
+  models = globalconfig.loadmodel(models)
 
-model = model.to(device=os.environ['device'])
-
-print ('Params to learn:')
-params_to_update = []
-for name,param in model.named_parameters():
-  if param.requires_grad == True:
-    params_to_update.append(param)
-    # print ('\t', name)
+for i in range(5):
+  models[i] = models[i].to(device=os.environ['device'])
+  params_to_update = []
+  for name,param in models[i].named_parameters():
+    if param.requires_grad == True:
+      params_to_update.append(param)
 
 # DEFINE OPTIMIZER
 optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
@@ -97,9 +94,17 @@ criterion = nn.functional.cross_entropy
 from tools import train_and_check as mtool
 
 # RUN TRAINING PROCEDURE
-mtool.train(
-  model,
-  dataloader[0],
+# mtool.train(
+#   model,
+#   dataloader[0],
+#   optimizer,
+#   criterion,
+#   args['epochs']
+# )
+
+mtool.train5folds(
+  models,
+  dataloaders,
   optimizer,
   criterion,
   args['epochs']

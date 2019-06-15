@@ -199,28 +199,13 @@ def train(
     Nothing, but prints model accuracies during training.
   """
   since = time.time()
-  train_dataloader = dataloader['train']
-  val_dataloader = dataloader['val']
-
-  step = model.step
-  pretrain_epochs = int(model.epochs)
-  device = os.environ['device']
-  model = model.to(device=device)
 
   # Weights: The number of samples in each class.
   # Train_weights: 1/Weights, with normalization.
-  weights = train_dataloader.dataset.weights
+  weights = dataloader['train'].dataset.weights
   train_weights = 1 / weights
   s = np.sum(train_weights)
-  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
-
-  # Print every n steps.
-  print_every = int(os.environ['print_every'])
-  # Save model every n epochs.
-  save_every = int(os.environ['save_every'])
-
-  best_model = copy.deepcopy(model.state_dict())
-  best_balance_acc = 0.0
+  train_weights = torch.from_numpy(train_weights / s).to(device=os.environ['device'], dtype=torch.float32)
 
   info = {
       'since': since,
@@ -247,66 +232,53 @@ def train(
         'tb-logdir': os.environ['tb-logdir'],
         'epochs': str(model.epochs+epochs)
       },
-      os.environ['savepath'] + 'best.pkl'
+      '{}fold{}/best.pkl'.format(os.environ['savepath'], model.fold)
     )
-    # running_y = np.array([])
-    # running_ypred = np.array([])
-    # for t, (x, y) in enumerate(train_dataloader):
-    #   model.train()
-    #   x = x.to(device=device, dtype=torch.float32)
-    #   y = y.to(device=device, dtype=torch.long)
 
-    #   # Forward prop.
-    #   scores = model(x)
-    #   _, preds = scores.max(1)
-    #   preds = preds.cpu().numpy()
-    #   running_ypred = np.hstack((running_ypred, preds))
-    #   running_y = np.hstack((running_y, y.cpu().numpy()))
-    #   loss = criterion(scores, y, train_weights)
+def train5folds(
+  models,
+  dataloaders,
+  optimizer,
+  criterion,
+  epochs
+):
+  since = time.time()
 
-    #   writer.add_scalars('Aggregate/Loss',{'loss': loss.item()}, step)
-    #   step += 1
+  # Weights: The number of samples in each class.
+  # Train_weights: 1/Weights, with normalization.
+  weights = dataloaders[0]['train'].dataset.weights
+  train_weights = 1 / weights
+  s = np.sum(train_weights)
+  train_weights = torch.from_numpy(train_weights / s).to(device=os.environ['device'], dtype=torch.float32)
 
-    #   # Back prop.
-    #   optimizer.zero_grad()
-    #   loss.backward()
-    #   optimizer.step()
+  info = [None, None, None, None, None]
+  for i in range(5):
+    info[i] = {
+      'since': since,
+      'epochs': epochs,
+      'train_weights': train_weights,
+      'best':{
+        'score': 0.0,
+        'model': copy.deepcopy(models[i].state_dict())
+      }
+    }
 
-    #   if (t+1) % print_every == 0:
-    #     met_acc = accuracy(running_y, running_ypred)
-    #     met_balanced_acc_score = metrics.balanced_accuracy_score(running_y, running_ypred)
-    #     writer.add_scalars('Aggregate/Acc',{'Train Acc': met_acc}, step)
-    #     writer.add_scalars('Aggregate/BalancedAcc', {'Train Score': met_balanced_acc_score}, step)
-    #     print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-    #     sec = time.time() - since
-    #     h = int(sec // 3600)
-    #     m = int((sec % 3600) // 60)
-    #     s = int((sec % 3600) % 60)
-    #     elapse = "{} hours, {} minutes, {} seconds.".format(h,m,s)
-    #     print (time.asctime().replace(' ', '-'), ' Elapsed time:', elapse)
-    #     print('Epoch %d/%d, Step %d (Total %d/%d, %d):\nLoss:\t%.4f\nTraining acc\t%.4f\nTraining balanced score\t%.4f' % (e+1, epochs, t+1, e+1+pretrain_epochs, epochs+pretrain_epochs, step, loss.item(), met_acc, met_balanced_acc_score))
-    #     print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-    #     res = check(val_dataloader, model, step)
-    #     print()
-    #     if res > best_balance_acc:
-    #       best_model = copy.deepcopy(model.state_dict())
-    #       best_balance_acc = res
+  for e in range(epochs):
+    for i in range(5):
+      print ('Fold {}:'.format(i))
+      models[i].fold = i
+      info[i]['e'] = e
+      res = train_one_epoch(models[i], dataloaders[i], optimizer, criterion, info[i])
+      model = res['model']
+      best = res['best']
+      info[i]['best']['score'] = best['score']
+      info[i]['best']['model'] = copy.deepcopy(best['model'])
 
-    # if (e+1) % save_every == 0:
-    #   savepath = os.environ['savepath']
-    #   savefilepath = savepath + str(e+pretrain_epochs+1) + 'epochs.pkl'
-    #   # Check if the savepath is valid.
-    #   if not os.path.exists(savepath):
-    #     os.mkdir(savepath)
-    #     print ('Create dir', savepath)
-    #   # Save the checkpoint.
-    #   torch.save({
-    #     'state_dict': model.state_dict(),
-    #     'episodes': str(step),
-    #     'tb-logdir': os.environ['tb-logdir']
-    #     },
-    #     savefilepath
-    #   )
-    #   print ('Model save as', savefilepath)
-
-  
+      torch.save({
+          'state_dict': info[i]['best']['model'],
+          'step': str(models[i].step),
+          'tb-logdir': os.environ['tb-logdir'],
+          'epochs': str(models[i].epochs+epochs)
+        },
+        '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
+      )

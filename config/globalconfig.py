@@ -81,20 +81,21 @@ def update_parser_params(args):
   os.environ['batch-size'] = args['batch_size']
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
-  # os.environ['pretrain-modelpath'] = os.environ['savepath']+args['pretrain']+'epochs.pkl'
-  # os.environ['pretrain-epochs'] = args['pretrain']
 
-def loadmodel(model):
-  # checkpoint = load(os.environ['pretrain-modelpath'])
-  checkpoint = load(os.environ['savepath']+'best.pkl')
-  model.load_state_dict(checkpoint['state_dict'])
-  print('Checkpoint restored!')
-  # os.environ['step'] = 
-  os.environ['tb-logdir'] = checkpoint['tb-logdir']
-  # os.environ['pretrain-epochs'] = checkpoint['epochs']
-  model.step = int(checkpoint['step'])
-  model.epochs = int(checkpoint['epochs'])
-  return model
+def loadmodels(models):
+  for i in range(5):
+    filepath = '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
+    if (os.path.exists('{}fold{}/best.pkl'.format(os.environ['savepath'], i))):
+      checkpoint = load(filepath)
+      models[i].load_state_dict(checkpoint['state_dict'])
+      os.environ['tb-logdir'] = checkpoint['tb-logdir']
+      models[i].step = int(checkpoint['step'])
+      models[i].epochs = int(checkpoint['epochs'])
+    else:
+      models[i].step=0
+      models[i].epochs=0
+  print('Checkpoint restored!') 
+  return models
 
 def set_no_grad(model):
   for param in model.parameters():
