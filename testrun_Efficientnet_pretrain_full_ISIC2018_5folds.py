@@ -68,7 +68,7 @@ for i in range(5):
   models[i] = EfficientNet.from_pretrained('efficientnet-b3')
   # Modify.
   num_fcin = models[i]._fc.in_features
-  model._fc = nn.Linear(num_fcin, len(dataloaders[i]['train'].dataset.classes))
+  models[i]._fc = nn.Linear(num_fcin, len(dataloaders[i]['train'].dataset.classes))
 
 # print (model)
 
