@@ -30,17 +30,32 @@ def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 4, 'pin
   valdata.weights = weights
 
   batch = int(os.environ['batch-size'])
-  train_arr = np.array(np.load(datapath+'train.npy'), dtype='int')
-  val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
+  # train_arr = np.array(np.load(datapath+'train.npy'), dtype='int')
+  # val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
 
-  train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr), **kwargs)
-  train4val_dataloader = DataLoader(train4valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_arr), **kwargs)
-  val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_arr), **kwargs)
+  fold_ind = [np.array([]) for i in range(5)]
+  for _ in range(5):
+    fold_ind[_] = np.array(np.load(datapath+str(_)+'fold.npy'), dtype='int')
+
+  dataloader_5folds = [0,0,0,0,0]
+  for k in range(5):
+    VAL_IND = 4-k
+    train_ind = np.array([])
+    val_ind = np.array([])
+    for i in range(5):
+      if i == VAL_IND:
+        val_ind = fold_ind[i]
+      else:
+        train_ind = np.hstack((train_ind, fold_ind[i])).astype('int')
+    train_dataloader = DataLoader(traindata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind), **kwargs)
+    train4val_dataloader = DataLoader(train4valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(train_ind), **kwargs)
+    val_dataloader = DataLoader(valdata, batch_size=batch, sampler=sampler.SubsetRandomSampler(val_ind), **kwargs)
+    dataloader_5folds[k] = {
+      'train': train_dataloader,
+      'train4val': train4val_dataloader,
+      'val': val_dataloader
+    }
 
   print ("Collect data complete!\n")
 
-  return {
-    'train': train_dataloader,
-    'train4val': train4val_dataloader,
-    'val': val_dataloader
-  }
+  return dataloader_5folds
