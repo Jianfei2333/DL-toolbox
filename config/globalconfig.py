@@ -69,6 +69,9 @@ def update_filename(file):
   os.environ['savepath'] += filename + '/'
   os.environ['logfile-dir'] += filename + '.log'
   os.environ['filename'] = filename
+  if not os.path.exists(os.environ['savepath']):
+    os.mkdir(os.environ['savepath'])
+    print ('Create dir', os.environ['savepath'])
 
 def update_parser_params(args):
   """
