@@ -72,7 +72,7 @@ def update_filename(file):
   if not os.path.exists(os.environ['savepath']):
     os.mkdir(os.environ['savepath'])
     for i in range(5):
-      os.mkdir(os.environ['datapath']+'fold{}/'.format(i))
+      os.mkdir(os.environ['savepath']+'fold{}/'.format(i))
     print ('Create dir', os.environ['savepath'])
 
 def update_parser_params(args):
