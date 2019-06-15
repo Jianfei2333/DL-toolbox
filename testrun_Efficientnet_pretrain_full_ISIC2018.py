@@ -72,6 +72,9 @@ model._fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
 
 if args['continue']:
   model = globalconfig.loadmodel(model)
+else:
+  model.step=0
+  model.epochs=0
 
 model = model.to(device=os.environ['device'])
 
@@ -96,7 +99,7 @@ from tools import train_and_check as mtool
 # RUN TRAINING PROCEDURE
 mtool.train(
   model,
-  dataloader,
+  dataloader[0],
   optimizer,
   criterion,
   args['epochs']
