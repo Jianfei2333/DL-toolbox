@@ -74,6 +74,10 @@ for i in range(5):
 
 if args['continue']:
   models = globalconfig.loadmodel(models)
+else:
+  for i in range(5):
+    models[i].step=0
+    models[i].epochs=0
 
 for i in range(5):
   models[i] = models[i].to(device=os.environ['device'])

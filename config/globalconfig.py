@@ -91,9 +91,6 @@ def loadmodels(models):
       os.environ['tb-logdir'] = checkpoint['tb-logdir']
       models[i].step = int(checkpoint['step'])
       models[i].epochs = int(checkpoint['epochs'])
-    else:
-      models[i].step=0
-      models[i].epochs=0
   print('Checkpoint restored!') 
   return models
 
