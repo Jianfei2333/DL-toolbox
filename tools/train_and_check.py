@@ -151,7 +151,8 @@ def train_one_epoch(
         t+1,
         total_e,
         total_epochs,
-        model.step
+        step,
+        loss.item()
       )
       print (prompt)
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')
