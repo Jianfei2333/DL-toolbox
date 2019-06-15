@@ -22,7 +22,7 @@ def run():
   # Global environment variables.
   user = os.popen('whoami').readline()
   from tools import deviceSelector as d
-  os.environ['step'] = '0'
+  # os.environ['step'] = '0'
   if user.find('jianfei') == -1:
     os.environ['where_am_i'] = 'pc'
     os.environ['datapath'] = '/home/huihui/Data/ISIC2018_with_Color_Constancy/'
@@ -40,7 +40,7 @@ def run():
   t = time.asctime().replace(' ', '-')
   os.environ['logfile-dir'] += t
   os.environ['tb-logdir'] += t
-  os.environ['pretrain-epochs'] = '0'
+  # os.environ['pretrain-epochs'] = '0'
   
   # Some global restricts.
   if os.environ['device'] != 'cpu':
@@ -71,6 +71,8 @@ def update_filename(file):
   os.environ['filename'] = filename
   if not os.path.exists(os.environ['savepath']):
     os.mkdir(os.environ['savepath'])
+    for i in range(5):
+      os.mkdir(os.environ['davepath']+'fold{}/'.format(i))
     print ('Create dir', os.environ['savepath'])
 
 def update_parser_params(args):
@@ -87,9 +89,11 @@ def loadmodel(model):
   checkpoint = load(os.environ['savepath']+'best.pkl')
   model.load_state_dict(checkpoint['state_dict'])
   print('Checkpoint restored!')
-  os.environ['step'] = checkpoint['episodes']
+  # os.environ['step'] = 
   os.environ['tb-logdir'] = checkpoint['tb-logdir']
-  os.environ['pretrain-epochs'] = checkpoint['epochs']
+  # os.environ['pretrain-epochs'] = checkpoint['epochs']
+  model.step = int(checkpoint['step'])
+  model.epochs = int(checkpoint['epochs'])
   return model
 
 def set_no_grad(model):

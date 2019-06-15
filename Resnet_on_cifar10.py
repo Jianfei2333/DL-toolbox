@@ -65,7 +65,7 @@ if continue_train:
   model_checkpoint = torch.load(pretrain_model_path)
   model.load_state_dict(model_checkpoint['state_dict'])
   print('Checkpoint restored!')
-  step = model_checkpoint['episodes']
+  step = model_checkpoint['step']
   os.environ['tb-logdir'] = model_checkpoint['tb-logdir']
 
 
