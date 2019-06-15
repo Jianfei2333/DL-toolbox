@@ -130,7 +130,7 @@ def train_one_epoch(
     loss = criterion(scores, y, train_weights)
 
     writer.add_scalars('Aggregate/Loss',{'loss': loss.item()}, step)
-    model.step += 1
+    step += 1
 
     # Back prop.
     optimizer.zero_grad()
@@ -161,6 +161,7 @@ def train_one_epoch(
         best_model = copy.deepcopy(model.state_dict())
         best_score = res
 
+  model.step = step
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
     savemodel(filename, model)
