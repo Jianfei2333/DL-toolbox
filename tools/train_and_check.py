@@ -29,7 +29,7 @@ def getElapse(since):
   s = int((sec % 3600) % 60)
   return (h, m, s)
 
-def check(loader, model, step=0):
+def check(loader, model, step, mode='val'):
   """
   Check the accuracy of the model on validation set / test set.
 
@@ -40,7 +40,12 @@ def check(loader, model, step=0):
   Return:
     Nothing, but print the accuracy result to console.
   """
-  print ('Checking accuracy on validation set.\n')
+  if mode == 'val':
+    print ('Checking accuracy on validation set.\n')
+  elif mode == 'train':
+    print ('* * * * * * * * * * * * * * * * * * * * * * * *')
+    print ('Checking accuracy on training set without data augmentation.')
+    print ('* * * * * * * * * * * * * * * * * * * * * * * *')
 
   device=os.environ['device']
 
@@ -84,14 +89,23 @@ def check(loader, model, step=0):
     print (met_precision_recall)
     print()
 
-    writer.add_scalars('Aggregate/Acc',{'Validation Acc': met_acc}, step)
-    for i in range(C):
-      writer.add_scalars('Multiclass/'+classes[i], {
-        'Precision': met_precision_recall[classes[i]][0],
-        'Recall': met_precision_recall[classes[i]][1]
-      }, step)
-    writer.add_scalars('Aggregate/BalancedAcc', {'Score': met_balanced_acc_score}, step)
-    
+    if mode == 'val':
+      writer.add_scalars('fold{}/Aggregate/Acc'.format(model.fold),{'Val Acc': met_acc}, step)
+      for i in range(C):
+        writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
+          'Val Precision': met_precision_recall[classes[i]][0],
+          'Val Recall': met_precision_recall[classes[i]][1]
+        }, step)
+      writer.add_scalars('fold{}/Aggregate/Score'.format(model.fold), {'Val Score': met_balanced_acc_score}, step)
+    elif mode == 'train':
+      writer.add_scalars('fold{}/Aggregate/Acc'.format(model.fold),{'Train Acc': met_acc}, step)
+      for i in range(C):
+        writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
+          'Train Precision': met_precision_recall[classes[i]][0],
+          'Train Recall': met_precision_recall[classes[i]][1]
+        }, step)
+      writer.add_scalars('fold{}/Aggregate/Score'.format(model.fold), {'Train Score': met_balanced_acc_score}, step)
+
     return met_balanced_acc_score
 
 def train_one_epoch(
@@ -129,7 +143,7 @@ def train_one_epoch(
     scores = model(x)
     loss = criterion(scores, y, train_weights)
 
-    writer.add_scalars('Aggregate/Loss',{'loss': loss.item()}, step)
+    writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)
     step += 1
 
     # Back prop.
@@ -143,9 +157,11 @@ def train_one_epoch(
       elapse = "{} hours, {} minutes, {} seconds.".format(h,m,s)
       print (time.asctime().replace(' ', '-'), ' Elapsed time:', elapse)
       prompt = '''
+        Fold {}
         Epoch {}/{}, Step {} (Total {}/{}, {}):
         Loss:\t{}
       '''.format(
+        model.fold,
         e,
         epochs,
         t+1,
@@ -163,6 +179,9 @@ def train_one_epoch(
         best_score = res
 
   model.step = step
+  
+  check(train4val_dataloader, model, step, 'train')
+  
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
     savemodel(filename, model)
@@ -264,6 +283,7 @@ def train5folds(
     }
 
   for e in range(epochs):
+    mean_score = 0.0
     for i in range(5):
       print ('Fold {}:'.format(i))
       models[i].fold = i
@@ -282,3 +302,6 @@ def train5folds(
         },
         '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
       )
+      mean_score += best['score']/5
+
+    writer.add_scalars('CrossFolds/Score', {'Score': mean_score}, mean_score)
