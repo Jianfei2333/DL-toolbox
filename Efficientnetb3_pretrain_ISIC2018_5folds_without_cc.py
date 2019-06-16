@@ -81,16 +81,20 @@ else:
     models[i].step=0
     models[i].epochs=0
 
+params = []
 for i in range(5):
   models[i] = models[i].to(device=os.environ['device'])
   params_to_update = []
   for name,param in models[i].named_parameters():
     if param.requires_grad == True:
       params_to_update.append(param)
+  params.append(params_to_update)
 
 # DEFINE OPTIMIZER
-optimizer = optim.SGD(params_to_update, lr=args['learning_rate'], momentum=0.9)
-# optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
+optimizers = [None, None, None, None, None]
+for i in range(5):
+  optimizers[i] = optim.SGD(params[i], lr=args['learning_rate'], momentum=0.9)
+  # optimizer = optim.Adam(params[i], lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
 # criterion = RecallWeightedCrossEntropy.recall_cross_entropy
@@ -111,7 +115,7 @@ from tools import train_and_check as mtool
 mtool.train5folds(
   models,
   dataloaders,
-  optimizer,
+  optimizers,
   criterion,
   args['epochs']
 )
