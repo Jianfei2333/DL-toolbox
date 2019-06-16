@@ -257,7 +257,7 @@ def train(
 def train5folds(
   models,
   dataloaders,
-  optimizer,
+  optimizers,
   criterion,
   epochs
 ):
@@ -288,7 +288,7 @@ def train5folds(
       print ('Fold {}:'.format(i))
       models[i].fold = i
       info[i]['e'] = e
-      res = train_one_epoch(models[i], dataloaders[i], optimizer, criterion, info[i])
+      res = train_one_epoch(models[i], dataloaders[i], optimizers[i], criterion, info[i])
       models[i] = res['model']
       best = res['best']
       info[i]['best']['score'] = best['score']
