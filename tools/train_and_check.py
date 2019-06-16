@@ -180,7 +180,7 @@ def train_one_epoch(
 
   model.step = step
   
-  check(train4val_dataloader, model, step, 'train')
+  train_score = check(train4val_dataloader, model, step, 'train')
   
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
@@ -191,7 +191,8 @@ def train_one_epoch(
     'best': {
       'score': best_score,
       'model': best_model
-    }
+    },
+    'train_score': train_score
   }
 
 def train(
@@ -245,14 +246,18 @@ def train(
     info['best']['score'] = best['score']
     info['best']['model'] = copy.deepcopy(best['model'])
 
+    # Save the best model after every epoch.
     torch.save({
         'state_dict': info['best']['model'],
         'step': str(model.step),
         'tb-logdir': os.environ['tb-logdir'],
-        'epochs': str(model.epochs+epochs)
+        'epochs': str(model.epochs+e)
       },
       '{}fold{}/best.pkl'.format(os.environ['savepath'], model.fold)
     )
+
+    writer.add_scalars('Aggragate/Score', {'Score': best['score']}, e+model.epochs)
+    writer.add_scalars('Aggragate/Score', {'Train Score': res['train_score']}, e+model.epochs)
 
 def train5folds(
   models,
@@ -284,6 +289,7 @@ def train5folds(
 
   for e in range(epochs):
     mean_score = 0.0
+    mean_train_score = 0.0
     for i in range(5):
       print ('Fold {}:'.format(i))
       models[i].fold = i
@@ -294,6 +300,7 @@ def train5folds(
       info[i]['best']['score'] = best['score']
       info[i]['best']['model'] = copy.deepcopy(best['model'])
 
+      # Save a best model after every epoch.
       torch.save({
           'state_dict': info[i]['best']['model'],
           'step': str(models[i].step),
@@ -303,5 +310,7 @@ def train5folds(
         '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
       )
       mean_score += best['score']/5
+      mean_train_score += res['train_score']/5
 
     writer.add_scalars('CrossFolds/Score', {'Score': mean_score}, e+models[0].epochs)
+    writer.add_scalars('CrossFolds/Score', {'Train Score': mean_train_score}, e+models[0].epochs)
