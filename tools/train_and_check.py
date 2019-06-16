@@ -289,7 +289,7 @@ def train5folds(
       models[i].fold = i
       info[i]['e'] = e
       res = train_one_epoch(models[i], dataloaders[i], optimizer, criterion, info[i])
-      model = res['model']
+      models[i] = res['model']
       best = res['best']
       info[i]['best']['score'] = best['score']
       info[i]['best']['model'] = copy.deepcopy(best['model'])
