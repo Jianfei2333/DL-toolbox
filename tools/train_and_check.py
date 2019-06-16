@@ -304,4 +304,4 @@ def train5folds(
       )
       mean_score += best['score']/5
 
-    writer.add_scalars('CrossFolds/Score', {'Score': mean_score}, mean_score)
+    writer.add_scalars('CrossFolds/Score', {'Score': mean_score}, e+models[0].epochs)
