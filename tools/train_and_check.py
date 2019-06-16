@@ -298,7 +298,7 @@ def train5folds(
           'state_dict': info[i]['best']['model'],
           'step': str(models[i].step),
           'tb-logdir': os.environ['tb-logdir'],
-          'epochs': str(models[i].epochs+epochs)
+          'epochs': str(models[i].epochs+e)
         },
         '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
       )
