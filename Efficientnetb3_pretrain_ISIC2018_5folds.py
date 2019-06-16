@@ -73,7 +73,7 @@ for i in range(5):
 # print (model)
 
 if args['continue']:
-  models = globalconfig.loadmodel(models)
+  models = globalconfig.loadmodels(models)
 else:
   for i in range(5):
     models[i].step=0
