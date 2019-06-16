@@ -15,15 +15,17 @@ globalconfig.update_filename(__file__)
 globalconfig.update_parser_params(args)
 
 # os.environ['datapath'] = os.environ['datapath'].replace('_with_Color_Constancy', '')
+os.environ['datapath'] = '/home/huihui/Data/ISIC2019_resize_crop/'
 
 from DataUtils import isic2018 as data
-imgsize = (450, 600)
-imgcount = 10015
+imgsize = (1024, 1024)
+# imgcount = 10015
 
 dataloader = data.getdata({'train': T.ToTensor(), 'val': None})
 
-dset = dataloader['train'].dataset
+dset = dataloader[0]['train'].dataset
 
+imgcount = dset.__len__()
 print ('Length: {}'.format(dset.__len__()))
 
 """
@@ -35,6 +37,14 @@ ISIC2018_with_Color_Constancy:
   mean = [0.62488488,0.62468347,0.62499634]
   var = [0.01315181,0.02681948,0.02968089]
   std = [0.11468134,0.16376653,0.17228143]
+ISIC2019_resize
+  mean = [0.5722533, 0.57208944, 0.57222467]
+  var = [0.0363115, 0.04595451, 0.05087139]
+  std = [0.19055578, 0.21437002, 0.22554687]
+ISIC2019_resize_crop
+  mean = [0.56935831, 0.56919221, 0.56929657]
+  var = [0.03586197, 0.04661301, 0.05185368]
+  std = [0.18937256, 0.21590046, 0.22771403]
 """
 
 def computeMean():
@@ -50,10 +60,10 @@ def computeMean():
 
 # computeMean()
 
-def computeVal():
+def computeVar():
   pixels = imgsize[0] * imgsize[1] * imgcount
   running_val = np.array([0.,0.,0.])
-  mean = np.array([0.62488488,0.62468347,0.62499634])
+  mean = np.array([0.56935831, 0.56919221, 0.56929657])
   for k in range(dset.__len__()):
     img = dset.__getitem__(k)
     img = img[0].numpy()
@@ -62,4 +72,4 @@ def computeVal():
   print ('Total val:', running_val)
   print ('Total std:', np.sqrt(running_val))
 
-computeVal()
+computeVar()
