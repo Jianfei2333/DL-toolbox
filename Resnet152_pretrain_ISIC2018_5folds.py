@@ -11,7 +11,9 @@ globalconfig.update_parser_params(args)
 
 # Essential network building blocks.
 from Networks.Nets import Resnet
-from torchvision import models
+from Networks.Losses import RecallWeightedCrossEntropy
+from torchvision import models as Models
+from efficientnet_pytorch import EfficientNet
 
 # Data loader.
 import torchvision.transforms as T
@@ -27,8 +29,8 @@ import numpy as np
 
 transform = {
   'train': T.Compose([
-    T.Resize((600,600)), # 放大
-    T.RandomResizedCrop((224,224)), # 随机裁剪后resize
+    T.Resize((500,500)), # 放大
+    T.RandomResizedCrop((300,300)), # 随机裁剪后resize
     T.RandomHorizontalFlip(0.5), # 随机水平翻转
     T.RandomVerticalFlip(0.5), # 随机垂直翻转
     T.RandomApply([T.RandomRotation(90)], 0.5), # 随机旋转90/270度
@@ -37,11 +39,12 @@ transform = {
     T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    # T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    T.Normalize(mean=(0.62488488,0.62468347,0.62499634), std=(0.11468134,0.16376653,0.17228143))
   ]), 
   'val': T.Compose([
-    T.Resize((224,224)), # 放大
-    T.CenterCrop((224,224)),
+    T.Resize((300,300)), # 放大
+    T.CenterCrop((300,300)),
     # T.RandomResizedCrop((224,224)), # 随机裁剪后resize
     # T.RandomHorizontalFlip(0.5), # 随机水平翻转
     # T.RandomVerticalFlip(0.5), # 随机垂直翻转
@@ -51,52 +54,57 @@ transform = {
     # T.RandomApply([T.ColorJitter(contrast=np.random.random()/5+0.9)], 0.5), # 随机调整图像对比度
     # T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
-    T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    # T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
+    T.Normalize(mean=(0.62488488,0.62468347,0.62499634), std=(0.11468134,0.16376653,0.17228143))
   ])
 }
 
 # GOT DATA
-dataloader = data.getdata(transform)
+dataloaders = data.getdata(transform)
 
 # DEFINE MODEL
-model = models.resnet152(pretrained=True)
-for param in model.layer3.parameters():
-  # print (param)
-  param.requires_grad = False
-for param in model.layer4.parameters():
-  # print (param)
-  param.requires_grad = False 
-# Modify.
-num_fcin = model.fc.in_features
-model.fc = nn.Linear(num_fcin, len(dataloader['train'].dataset.classes))
+models = [None, None, None, None, None]
+for i in range(5):
+  models[i] = Models.resnet152(pretrained=True)
+  # Modify.
+  num_fcin = models[i].fc.in_features
+  models[i].fc = nn.Linear(num_fcin, len(dataloaders[i]['train'].dataset.classes))
 
 # print (model)
 
 if args['continue']:
-  model = globalconfig.loadmodel(model)
+  models = globalconfig.loadmodels(models)
+else:
+  for i in range(5):
+    models[i].step=0
+    models[i].epochs=0
 
-print ('Params to learn:')
-params_to_update = []
-for name,param in model.named_parameters():
-  print('name:', name)
-  if param.requires_grad == True:
-    params_to_update.append(param)
-    print ('\t', name)
+params = []
+for i in range(5):
+  models[i] = models[i].to(device=os.environ['device'])
+  params_to_update = []
+  for name,param in models[i].named_parameters():
+    if param.requires_grad == True:
+      params_to_update.append(param)
+  params.append(params_to_update)
 
 # DEFINE OPTIMIZER
-# optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
-optimizer = optim.Adam(params_to_update, lr=args['learning_rate'])
+optimizers = [None, None, None, None, None]
+for i in range(5):
+  optimizers[i] = optim.SGD(params[i], lr=args['learning_rate'], momentum=0.9)
+  # optimizer = optim.Adam(params[i], lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
+# criterion = RecallWeightedCrossEntropy.recall_cross_entropy
+
 
 # Useful tools.
 from tools import train_and_check as mtool
 
-# RUN TRAINING PROCEDURE
-mtool.train(
-  model,
-  dataloader,
-  optimizer,
+mtool.train5folds(
+  models,
+  dataloaders,
+  optimizers,
   criterion,
   args['epochs']
 )
