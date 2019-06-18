@@ -18,8 +18,8 @@ from efficientnet_pytorch import EfficientNet
 
 from tools import datainfo
 import torchvision.transforms as T
-info = datainfo.getdatainfo()
 
+info = datainfo.getdatainfo()
 mean = info['mean']
 std = info['std']
 normalize = T.Normalize(mean=mean, std=std)
