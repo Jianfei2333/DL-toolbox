@@ -50,6 +50,9 @@ else:
     models[i].step=0
     models[i].epochs=0
 
+for i in range(5):
+  models[i] = models[i].to(device=os.environ['device'])
+
 from tools import train_and_check as mtool
 
 for i in range(5):
