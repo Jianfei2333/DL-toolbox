@@ -82,6 +82,8 @@ def update_parser_params(args):
   os.environ['batch-size'] = args['batch_size']
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
+  print (args['gpus'])
+  print (type(args['gpus']))
   if args['gpus'] != 1:
     if args['gpus'] == 0:
       os.environ['device'] = 'cpu'
