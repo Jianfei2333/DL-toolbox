@@ -83,8 +83,11 @@ def update_parser_params(args):
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
   if args['gpus'] != 1:
-    gs = d.get_gpu_choice(args['gpus'])
-    os.environ['device'] = 'cuda:'+gs
+    if args['gpus'] == 0:
+      os.environ['device'] = 'cpu'
+    else:
+      gs = d.get_gpu_choice(args['gpus'])
+      os.environ['device'] = 'cuda:'+gs
 
 def loadmodels(models):
   for i in range(5):
