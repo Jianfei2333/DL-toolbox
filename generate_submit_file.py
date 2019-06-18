@@ -76,7 +76,7 @@ for i in range(5):
   else:
     mean_scores += scores/5
 
-result_mat = np.hstack((files[:,None], mean_scores))
+result_mat = np.hstack((np.array(files)[:,None], mean_scores))
 head = np.append(['image'], info['classes'])
 result_df = pd.DataFrame(result_mat, columns=head)
 print (result_df)
