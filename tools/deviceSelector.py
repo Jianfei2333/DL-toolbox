@@ -48,7 +48,7 @@ def get_gpus():
     gpus.append(gpu)
   return gpus
 
-def get_gpu_choice():
+def get_gpu_choice(n=1):
   """
   Get the best GPU choice.
   
@@ -57,13 +57,16 @@ def get_gpu_choice():
   
   Return:
     - device: A string variable representing the GPU choice.
-        For example: 'cuda:0'.
+        For example: '0'.
   """
   gpus = get_gpus()
-  r = sorted(gpus, key=lambda v: (((float)(v['memtotal']-v['memfree']))/v['memtotal'])*100+v['usage'])[0]
-  if ((float)(r['memfree'])/r['memtotal']) < 0.5:
-    print('###############################################################################')
-    print('Warning: The best gpu now is in high load! Please check and use another server!')
-    print('###############################################################################')
-  print ('Recommended gpu is: gpu%d, mem: %d/%d (%.2f%%), usage: %d%%' % (r['index'], r['memfree'], r['memtotal'], ((float)(r['memfree'])/r['memtotal'])*100, r['usage']))
-  return str(r['index'])
+  r = sorted(gpus, key=lambda v: (((float)(v['memtotal']-v['memfree']))/v['memtotal'])*100+v['usage'])[0:n]
+  res = []
+  for i in range(n):
+    res.append(r[i]['index'])
+    if ((float)(r[i]['memfree'])/r[i]['memtotal']) < 0.5:
+      print('###############################################################################')
+      print('Warning: The best gpu now is in high load! Please check and use another server!')
+      print('###############################################################################')
+    print ('Recommended gpu is: gpu%d, mem: %d/%d (%.2f%%), usage: %d%%' % (r[i]['index'], r[i]['memfree'], r[i]['memtotal'], ((float)(r[i]['memfree'])/r[i]['memtotal'])*100, r[i]['usage']))
+  return ','.join(res)

@@ -78,9 +78,13 @@ def update_filename(file):
 def update_parser_params(args):
   """
   """
+  from tools import deviceSelector as d
   os.environ['batch-size'] = args['batch_size']
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
+  if args['gpus'] != 1:
+    gs = d.get_gpu_choice(args['gpus'])
+    os.environ['device'] = 'cuda:'+gs
 
 def loadmodels(models):
   for i in range(5):
