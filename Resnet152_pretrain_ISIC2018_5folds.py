@@ -27,6 +27,12 @@ import numpy as np
 
 # 下面开始进行主干内容
 
+from tools import datainfo
+info = datainfo.getdatainfo()
+mean = info['mean']
+std = info['std']
+normalize = T.Normalize(mean=mean, std=std)
+
 transform = {
   'train': T.Compose([
     T.Resize((500,500)), # 放大
@@ -40,7 +46,7 @@ transform = {
     T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
     # T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
-    T.Normalize(mean=(0.62488488,0.62468347,0.62499634), std=(0.11468134,0.16376653,0.17228143))
+    normalize
   ]), 
   'val': T.Compose([
     T.Resize((300,300)), # 放大
@@ -55,7 +61,7 @@ transform = {
     # T.RandomApply([T.ColorJitter(saturation=np.random.random()/5+0.9)], 0.5), # 随机调整图像饱和度
     T.ToTensor(),
     # T.Normalize(mean=(0.7635, 0.5461, 0.5705), std=(0.6332, 0.3557, 0.3974))
-    T.Normalize(mean=(0.62488488,0.62468347,0.62499634), std=(0.11468134,0.16376653,0.17228143))
+    normalize
   ])
 }
 
@@ -68,7 +74,7 @@ for i in range(5):
   models[i] = Models.resnet152(pretrained=True)
   # Modify.
   num_fcin = models[i].fc.in_features
-  models[i].fc = nn.Linear(num_fcin, len(dataloaders[i]['train'].dataset.classes))
+  models[i].fc = nn.Linear(num_fcin, len(info.classes))
 
 # print (model)
 
