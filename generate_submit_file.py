@@ -60,7 +60,7 @@ for i in range(5):
 from tools import train_and_check as mtool
 
 files = np.array(loader.dataset.imgs)
-files = [x[x.rfind('/'), x.rfind('.')+1] for x in files[:,0]]
+files = [x[x.rfind('/'):x.rfind('.')+1] for x in files[:,0]]
 
 print(files)
 
