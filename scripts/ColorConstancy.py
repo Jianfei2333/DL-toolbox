@@ -6,8 +6,8 @@ sys.path.append('/home/huihui/Project/DL-toolbox/')
 import glob
 from tools import colorConstancy
 
-frompath = '/home/huihui/Data/ISIC2019/Data'
-topath = '/home/huihui/Data/ISIC2019/resize_crop'
+frompath = '/home/huihui/Data/ISIC2018_val/Data'
+topath = '/home/huihui/Data/ISIC2018_val/ColorConstancy'
 
 def getClasses():
   return glob.glob(frompath+'/*')
@@ -24,6 +24,7 @@ def convert_cc(img):
   """
   Only color constancy.
   """
+  img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
   return colorConstancy.Grey_world(img)
 
 
@@ -68,7 +69,7 @@ def main():
     for imgpath in glob.glob(c+'/*.jpg'):
       print ('Converting {}'.format(imgpath))
       nimg = readImg(imgpath)
-      newimg = convert_resize_crop_cc(nimg)
+      newimg = convert_cc(nimg)
       outpath = imgpath.replace(frompath, topath)
       saveImg(newimg, outpath)
 
