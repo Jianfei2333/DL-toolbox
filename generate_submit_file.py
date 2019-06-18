@@ -76,7 +76,11 @@ for i in range(5):
   else:
     mean_scores += scores/5
 
-result_mat = np.hstack((np.array(files)[:,None], mean_scores))
+exp = np.exp(mean_scores)
+s = np.sum(exp, axis=1)[:,None]
+mean_probability = exp/s
+
+result_mat = np.hstack((np.array(files)[:,None], mean_probability))
 head = np.append(['image'], info['classes'])
 result_df = pd.DataFrame(result_mat, columns=head)
 print (result_df)
