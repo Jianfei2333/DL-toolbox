@@ -8,4 +8,5 @@ def getparser():
   parser.add_argument('-e', '--epochs', type=int, help='Epochs to train, default 20.', default=20)
   parser.add_argument('--save-every', help='Save the model every n epochs, default 5.', default='5')
   parser.add_argument('--print-every', help='Print the model every n steps, default 10.', default='50')
+  parser.add_argument('--gpus', help='Choose the total number of gpus to use.', default=1)
   return parser
