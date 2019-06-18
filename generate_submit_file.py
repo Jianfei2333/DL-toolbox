@@ -8,9 +8,11 @@ from config import globalconfig
 globalconfig.run()
 globalconfig.update_parser_params(args)
 
-os.environ['savepath'] += args['model']
+os.environ['savepath'] += args['model'] + '/'
 ind = os.environ['datapath'][:-1].rfind('/')+1
-os.environ['datapath'] = os.environ['datapath'][:ind] + args['data']
+os.environ['datapath'] = os.environ['datapath'][:ind] + args['data'] + '/'
+
+print ('Testing {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
 from efficientnet_pytorch import EfficientNet
 
@@ -32,6 +34,8 @@ transform = {
 loader = data.getdata(transform)
 
 import torch.nn as nn
+import numpy as np
+import pandas as pd
 
 # DEFINE MODEL
 models = [None, None, None, None, None]
@@ -55,6 +59,23 @@ for i in range(5):
 
 from tools import train_and_check as mtool
 
+files = np.array(loader.dataset.imgs)
+files = [x[x.rfind('/'), x.rfind('.')+1] for x in files[:,0]]
+
+print(files)
+
+mean_scores = None
 for i in range(5):
   scores = mtool.getScores(loader, models[i])
   print (scores.shape)
+  if mean_scores is None:
+    mean_scores = scores/5
+  else:
+    mean_scores += scores/5
+
+result_mat = np.hstack((files, mean_scores))
+head = ['image','MEL','NV','BCC','AKIEC','BKL','DF','VASC']
+result_df = pd.DataFrame(result_mat, columns=head)
+print (result_df)
+
+result_df.to_csv('{}{}_submit.csv'.format(os.environ['savepath'], args['data']), index=False)
