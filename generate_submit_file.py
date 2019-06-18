@@ -72,9 +72,9 @@ for i in range(5):
   scores = mtool.getScores(loader, models[i])
   print (scores.shape)
   if mean_scores is None:
-    mean_scores = scores/5
+    mean_scores = scores
   else:
-    mean_scores += scores/5
+    mean_scores += scores
 
 exp = np.exp(mean_scores)
 s = np.sum(exp, axis=1)[:,None]
