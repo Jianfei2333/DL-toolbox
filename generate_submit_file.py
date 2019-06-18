@@ -16,9 +16,12 @@ print ('Testing {} with {}.(Running on {})'.format(os.environ['savepath'], os.en
 
 from efficientnet_pytorch import EfficientNet
 
+from tools import datainfo
 import torchvision.transforms as T
-mean = (0.76352127,0.54612797,0.57053038)
-std = (0.14121186,0.15289281,0.17033405)
+info = datainfo.getdatainfo()
+
+mean = info['mean']
+std = info['std']
 normalize = T.Normalize(mean=mean, std=std)
 
 from DataUtils import isic2018_val as data
@@ -43,7 +46,7 @@ for i in range(5):
   models[i] = EfficientNet.from_pretrained('efficientnet-b3')
   # Modify.
   num_fcin = models[i]._fc.in_features
-  models[i]._fc = nn.Linear(num_fcin, 8)
+  models[i]._fc = nn.Linear(num_fcin, len(info['classes']))
 
 # print (model)
 
@@ -74,7 +77,7 @@ for i in range(5):
     mean_scores += scores/5
 
 result_mat = np.hstack((files, mean_scores))
-head = ['image','MEL','NV','BCC','AKIEC','BKL','DF','VASC']
+head = np.append(['image'], info['classes'])
 result_df = pd.DataFrame(result_mat, columns=head)
 print (result_df)
 
