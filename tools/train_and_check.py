@@ -29,6 +29,22 @@ def getElapse(since):
   s = int((sec % 3600) % 60)
   return (h, m, s)
 
+def getScores(loader, model):
+  device = os.environ['device']
+
+  model.eval()
+  with torch.no_grad():
+    total_scores = None
+    for x, y in loader:
+      x = x.to(device=device, dtype=torch.float)
+      scores = model(x).cpu().numpy()
+      if total_scores is not None:
+        total_scores = np.append(total_scores, scores, axis=0)
+      else:
+        total_scores = scores
+  return total_scores
+
+
 def check(loader, model, step, mode='val'):
   """
   Check the accuracy of the model on validation set / test set.
