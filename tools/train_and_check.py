@@ -37,11 +37,12 @@ def getScores(loader, model):
     total_scores = None
     for x, y in loader:
       x = x.to(device=device, dtype=torch.float)
-      scores = model(x).cpu().numpy()
+      scores = model(x)
+      score = scores.cpu().numpy()
       if total_scores is not None:
-        total_scores = np.append(total_scores, scores, axis=0)
+        total_scores = np.append(total_scores, score, axis=0)
       else:
-        total_scores = scores
+        total_scores = score
   return total_scores
 
 
