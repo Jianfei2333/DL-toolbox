@@ -63,7 +63,7 @@ def get_gpu_choice(n=1):
   r = sorted(gpus, key=lambda v: (((float)(v['memtotal']-v['memfree']))/v['memtotal'])*100+v['usage'])[0:n]
   res = []
   for i in range(n):
-    res.append(r[i]['index'])
+    res.append(str(r[i]['index']))
     if ((float)(r[i]['memfree'])/r[i]['memtotal']) < 0.5:
       print('###############################################################################')
       print('Warning: The best gpu now is in high load! Please check and use another server!')
