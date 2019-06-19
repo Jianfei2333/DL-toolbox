@@ -58,12 +58,7 @@ elif args['model'].find('Efficientnetb3') != -1:
 
 # print (model)
 
-if args['continue']:
-  models = globalconfig.loadmodels(models)
-else:
-  for i in range(5):
-    models[i].step=0
-    models[i].epochs=0
+models = globalconfig.loadmodels(models)
 
 for i in range(5):
   models[i] = models[i].to(device=os.environ['device'])
