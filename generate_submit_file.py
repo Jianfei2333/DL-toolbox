@@ -15,6 +15,7 @@ os.environ['datapath'] = os.environ['datapath'][:ind] + args['data'] + '/'
 print ('Testing {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
 from efficientnet_pytorch import EfficientNet
+from torchvision import models as Models
 
 from tools import datainfo
 import torchvision.transforms as T
@@ -42,11 +43,18 @@ import pandas as pd
 
 # DEFINE MODEL
 models = [None, None, None, None, None]
-for i in range(5):
-  models[i] = EfficientNet.from_pretrained('efficientnet-b3')
-  # Modify.
-  num_fcin = models[i]._fc.in_features
-  models[i]._fc = nn.Linear(num_fcin, len(info['classes']))
+if args['model'].find('Resnet152') != -1:
+  for i in range(5):
+    models[i] = Models.resnet152(pretrained=True)
+    # Modify.
+    num_fcin = models[i].fc.in_features
+    models[i].fc = nn.Linear(num_fcin, len(info.classes))
+elif args['model'].find('Efficientnetb3') != -1:
+  for i in range(5):
+    models[i] = EfficientNet.from_pretrained('efficientnet-b3')
+    # Modify.
+    num_fcin = models[i]._fc.in_features
+    models[i]._fc = nn.Linear(num_fcin, len(info['classes']))
 
 # print (model)
 
