@@ -74,7 +74,7 @@ for i in range(5):
   models[i] = Models.resnet152(pretrained=True)
   # Modify.
   num_fcin = models[i].fc.in_features
-  models[i].fc = nn.Linear(num_fcin, len(info.classes))
+  models[i].fc = nn.Linear(num_fcin, len(info['classes']))
 
 # print (model)
 

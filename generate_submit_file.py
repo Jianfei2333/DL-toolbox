@@ -48,7 +48,7 @@ if args['model'].find('Resnet152') != -1:
     models[i] = Models.resnet152(pretrained=True)
     # Modify.
     num_fcin = models[i].fc.in_features
-    models[i].fc = nn.Linear(num_fcin, len(info.classes))
+    models[i].fc = nn.Linear(num_fcin, len(info['classes']))
 elif args['model'].find('Efficientnetb3') != -1:
   for i in range(5):
     models[i] = EfficientNet.from_pretrained('efficientnet-b3')
