@@ -151,8 +151,6 @@ def train_one_epoch(
   total_e = model.epochs+e
   total_epochs = model.epochs+epochs
 
-  model = model.to(device=device)
-
   for t, (x, y) in enumerate(train_dataloader):
     model.train()
     x = x.to(device=device, dtype=torch.float32)
