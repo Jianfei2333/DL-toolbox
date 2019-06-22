@@ -4,7 +4,7 @@ import time
 from torch import load
 import torch
 
-def run():
+def run(args):
   """
   Run global configuration.
   
@@ -18,30 +18,47 @@ def run():
       - device: Device configuration with auto recommendation, namely, 'cpu' or 'cuda:#id'
       - tb-logdir: Tensorboard log dir.
   """
-
+  model = args['model']
+  data = args['data']
   # Global environment variables.
   user = os.popen('whoami').readline()
   from tools import deviceSelector as d
   # os.environ['step'] = '0'
   if user.find('jianfei') == -1:
     os.environ['where_am_i'] = 'pc'
-    os.environ['datapath'] = '/home/huihui/Data/ISIC2018_with_Color_Constancy/'
-    os.environ['device'] = 'cpu'
+    os.environ['datapath'] = '/home/huihui/Data/'
     os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
     os.environ['logfile-dir'] = '/home/huihui/Log/runlog/'
     os.environ['savepath'] = '/home/huihui/Models/'
   else:
     os.environ['where_am_i'] = 'lab'
-    os.environ['datapath'] = '/data0/share/ISIC2018_with_Color_Constancy/'
-    os.environ['device'] = 'cuda:'+d.get_gpu_choice()
+    os.environ['datapath'] = '/data0/share/'
     os.environ['tb-logdir'] = '/data0/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/data0/jianfei/runlog/'
     os.environ['savepath'] = '/data0/jianfei/models/'
   t = time.asctime().replace(' ', '-')
-  os.environ['logfile-dir'] += t
-  os.environ['tb-logdir'] += t
-  # os.environ['pretrain-epochs'] = '0'
+  os.environ['datapath'] += data + '/'
+  os.environ['logfile-dir'] += t + model + '-' + data + '/'
+  os.environ['tb-logdir'] += t + model + '-' + data + '/'
+  os.environ['logfile-dir'] += t + model + '-' + data + '.log'
+  os.environ['savepath'] += model + '-' + data + '/'
+  if not os.path.exists(os.environ['savepath']):
+    os.mkdir(os.environ['savepath'])
+    for i in range(5):
+      os.mkdir(os.environ['savepath']+'fold{}/'.format(i))
+    print ('Create dir', os.environ['savepath'])
+
+  os.environ['batch-size'] = args['batch_size']
+  os.environ['print_every'] = args['print_every']
+  os.environ['save_every'] = args['save_every']
   
+  if os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
+    os.environ['device'] = 'cpu'
+  else:
+    from tools import deviceSelector as d
+    gs = d.get_gpu_choice(args['gpus'])
+    os.environ['device'] = 'cuda:'+gs
+
   # Some global restricts.
   if os.environ['device'] != 'cpu':
     torch.cuda.set_device(os.environ['device'])
