@@ -27,7 +27,7 @@ models, params, modelinfo = model.load(info, True)
 
 transform = transform.load(modelinfo, info)
 
-loader = data.getdata(transform)
+loader = data.getdata(args['type'], transform)
 
 from tools import train_and_check as mtool
 
