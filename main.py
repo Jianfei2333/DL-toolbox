@@ -6,7 +6,6 @@ args = vars(globalparser.getparser().parse_args())
 
 from config import globalconfig
 globalconfig.run(args)
-# globalconfig.update_parser_params(args)
 
 print ('Train {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
@@ -19,10 +18,8 @@ transform = importlib.import_module('Loader.Transform.train_aug')
 from DataUtils import ImgFolder_5fold as data
 
 # Official packages.
-import torch
 import torch.nn as nn
 import torch.optim as optim
-import numpy as np
 
 # 下面开始进行主干内容
 from tools import datainfo
