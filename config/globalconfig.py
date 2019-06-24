@@ -4,7 +4,7 @@ import time
 from torch import load
 import torch
 
-def run(args):
+def run(args, create=True):
   """
   Run global configuration.
   
@@ -52,7 +52,7 @@ def run(args):
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
   
-  if os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
+  if create and os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
     os.environ['device'] = 'cpu'
   else:
     from tools import deviceSelector as d

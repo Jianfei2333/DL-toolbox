@@ -5,7 +5,7 @@ from config import globalparser
 args = vars(globalparser.getparser().parse_args())
 
 from config import globalconfig
-globalconfig.run(args)
+globalconfig.run(args, False)
 
 print ('Testing {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
