@@ -42,7 +42,7 @@ def run(args, create=True):
   os.environ['tb-logdir'] += t + model + '-' + data + '/'
   os.environ['logfile-dir'] += t + model + '-' + data + '.log'
   os.environ['savepath'] += model + '-' + data + '/'
-  if not os.path.exists(os.environ['savepath']):
+  if create and not os.path.exists(os.environ['savepath']):
     os.mkdir(os.environ['savepath'])
     for i in range(5):
       os.mkdir(os.environ['savepath']+'fold{}/'.format(i))
@@ -52,7 +52,7 @@ def run(args, create=True):
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
   
-  if create and os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
+  if os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
     os.environ['device'] = 'cpu'
   else:
     from tools import deviceSelector as d
