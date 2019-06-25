@@ -30,8 +30,6 @@ def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 4, 'pin
   valdata.weights = weights
 
   batch = int(os.environ['batch-size'])
-  # train_arr = np.array(np.load(datapath+'train.npy'), dtype='int')
-  # val_arr = np.array(np.load(datapath+'validation.npy'), dtype='int')
 
   fold_ind = [np.array([]) for i in range(5)]
   for _ in range(5):
