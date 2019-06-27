@@ -11,15 +11,12 @@ from config import globalparser
 args = vars(globalparser.getparser().parse_args())
 
 from config import globalconfig
-globalconfig.run()
-globalconfig.update_filename(__file__)
-globalconfig.update_parser_params(args)
+globalconfig.run(args, False)
 
-# os.environ['datapath'] = os.environ['datapath'].replace('_with_Color_Constancy', '')
-os.environ['datapath'] = '/home/huihui/Data/ISIC2019_resize_crop/'
+os.environ['datapath'] = '/home/huihui/Data/ISIC2019_resize_crop_cc/'
 
-from DataUtils import isic2018 as data
-imgsize = (1024, 1024)
+from DataUtils import ImgFolder_5fold as data
+imgsize = (500, 500)
 # imgcount = 10015
 
 dataloader = data.getdata({'train': T.ToTensor(), 'val': None})
@@ -71,7 +68,7 @@ def computeVar(mean):
     img = dset.__getitem__(k)
     img = img[0].numpy()
     running_var += np.sum((img - mean[:, None, None]) ** 2, axis=(1,2)).astype(np.float)/pixels
-    print ('After img', k, 'Mean:', running_var)
+    print ('After img', k, 'Var:', running_var)
   print ('Total var:', running_var)
   print ('Total std:', np.sqrt(running_var))
   return (running_var, np.sqrt(running_var))
@@ -87,6 +84,8 @@ def generateDatainfo():
     'classes': dset.classes
   }
   with open(os.environ['datapath']+'info.json', 'w') as outfile:
-    json.dumps(res, outfile, indent=2)
+    json.dump(res, outfile, indent=2)
   print (res)
   print ('Over!')
+
+generateDatainfo()
