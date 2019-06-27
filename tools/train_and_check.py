@@ -46,7 +46,7 @@ def getScores(loader, model):
   return total_scores
 
 
-def check(loader, model, step, mode='val'):
+def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
   """
   Check the accuracy of the model on validation set / test set.
 
@@ -57,6 +57,7 @@ def check(loader, model, step, mode='val'):
   Return:
     Nothing, but print the accuracy result to console.
   """
+  mode = kwargs['mode']
   if mode == 'val':
     print ('Checking accuracy on validation set.\n')
   elif mode == 'train':
@@ -73,10 +74,16 @@ def check(loader, model, step, mode='val'):
   with torch.no_grad():
     y_pred = None
     y_true = None
+    running_loss = 0.
     for x, y in loader:
       x = x.to(device=device, dtype=torch.float)
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
+
+      if criterion is not None:
+        loss_weights = kwargs['loss_weights']
+        running_loss += criterion(scores, y, loss_weights).item()
+
       _, preds = scores.max(1)
       # Prediction array
       if y_pred is None:
@@ -108,19 +115,23 @@ def check(loader, model, step, mode='val'):
 
     if mode == 'val':
       writer.add_scalars('fold{}/Aggregate/Acc'.format(model.fold),{'Val Acc': met_acc}, step)
-      for i in range(C):
-        writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
-          'Val Precision': met_precision_recall[classes[i]][0],
-          'Val Recall': met_precision_recall[classes[i]][1]
-        }, step)
+      # for i in range(C):
+      #   writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
+      #     'Val Precision': met_precision_recall[classes[i]][0],
+      #     'Val Recall': met_precision_recall[classes[i]][1]
+      #   }, step)
+      if criterion is not None:
+        writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold), {'Val Loss': running_loss}, step)
       writer.add_scalars('fold{}/Aggregate/Score'.format(model.fold), {'Val Score': met_balanced_acc_score}, step)
     elif mode == 'train':
       writer.add_scalars('fold{}/Aggregate/Acc'.format(model.fold),{'Train Acc': met_acc}, step)
-      for i in range(C):
-        writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
-          'Train Precision': met_precision_recall[classes[i]][0],
-          'Train Recall': met_precision_recall[classes[i]][1]
-        }, step)
+      # for i in range(C):
+      #   writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
+      #     'Train Precision': met_precision_recall[classes[i]][0],
+      #     'Train Recall': met_precision_recall[classes[i]][1]
+      #   }, step)
+      if criterion is not None:
+        writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold), {'Train Loss': running_loss}, step)
       writer.add_scalars('fold{}/Aggregate/Score'.format(model.fold), {'Train Score': met_balanced_acc_score}, step)
 
     return met_balanced_acc_score
@@ -160,7 +171,7 @@ def train_one_epoch(
     scores = model(x)
     loss = criterion(scores, y, train_weights)
 
-    writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)
+    # writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)
     step += 1
 
     # Back prop.
@@ -189,7 +200,7 @@ def train_one_epoch(
       )
       print (prompt)
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-      res = check(val_dataloader, model, step)
+      res = check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights})
       print()
       if res > best_score:
         best_model = copy.deepcopy(model.state_dict())
@@ -197,7 +208,7 @@ def train_one_epoch(
 
   model.step = step
   
-  train_score = check(train4val_dataloader, model, step, 'train')
+  train_score = check(train4val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'train'})
   
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
