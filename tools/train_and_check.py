@@ -186,8 +186,7 @@ def train_one_epoch(
       print (time.asctime().replace(' ', '-'), ' Elapsed time:', elapse)
       prompt = '''
         Fold {}
-        Epoch {}/{}, Step {} (Total {}/{}, {}):
-        Loss:\t{}
+        Epoch {}/{}, Step {} (Total {}/{}, {})
       '''.format(
         model.fold,
         e,
@@ -196,7 +195,7 @@ def train_one_epoch(
         total_e,
         total_epochs,
         step,
-        loss.item()
+        # loss.item()
       )
       print (prompt)
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')

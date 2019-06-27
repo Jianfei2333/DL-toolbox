@@ -6,8 +6,8 @@ sys.path.append('/home/huihui/Project/DL-toolbox/')
 import glob
 from tools import colorConstancy
 
-frompath = '/home/huihui/Data/ISIC2019/Data'
-topath = '/home/huihui/Data/ISIC2019_resize_crop_cc/Data'
+frompath = '/home/huihui/Data/ISIC2018/Data'
+topath = '/home/huihui/Data/ISIC2018_cc2/Data'
 
 def getClasses():
   return glob.glob(frompath+'/*')
@@ -19,6 +19,10 @@ def makepath(outpath):
 def readImg(inpath):
   # return Image.open(inpath)
   return cv2.imread(inpath)
+
+def convert_cc2(img):
+  img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+  return colorConstancy.shades_of_gray(img)
 
 def convert_cc(img):
   """
@@ -82,7 +86,7 @@ def saveImg(newImg, outpath):
 
 def main():
   classes = getClasses()
-  convert = convert_resize_crop_cc
+  convert = convert_cc2
   if not os.path.exists(topath):
     os.mkdir(topath)
   for i in range(len(classes)):

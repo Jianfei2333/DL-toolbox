@@ -13,7 +13,7 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args, False)
 
-os.environ['datapath'] = '/home/huihui/Data/ISIC2019_resize_crop_cc/'
+os.environ['datapath'] = '/home/huihui/Data/ISIC2018_cc2/'
 
 from DataUtils import ImgFolder_5fold as data
 imgsize = (500, 500)
