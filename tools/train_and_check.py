@@ -199,7 +199,7 @@ def train_one_epoch(
       )
       print (prompt)
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-      res = check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights})
+      res = check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'val'})
       print()
       if res > best_score:
         best_model = copy.deepcopy(model.state_dict())
