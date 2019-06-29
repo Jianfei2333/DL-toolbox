@@ -159,6 +159,7 @@ def train_one_epoch(
     device=device[:device.find(',')]
   print_every = int(os.environ['print_every'])
   save_every = int(os.environ['save_every'])
+  batch_scale = int(os.environ['batch_scale'])
 
   train_dataloader = dataloader['train']
   train4val_dataloader = dataloader['train4val']
@@ -176,14 +177,17 @@ def train_one_epoch(
     # Forward prop.
     scores = model(x)
     loss = criterion(scores, y, train_weights)
+    loss = loss/batch_scale
 
     # writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)
     step += 1
 
     # Back prop.
-    optimizer.zero_grad()
     loss.backward()
-    optimizer.step()
+
+    if (t+1) % batch_scale == 0:
+      optimizer.step()
+      optimizer.zero_grad()
 
     if (t+1) % print_every == 0:
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')

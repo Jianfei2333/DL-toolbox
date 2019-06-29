@@ -52,6 +52,7 @@ def run(args, create=True):
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
   os.environ['gpus'] = str(args['gpus'])
+  os.environ['batch_scale'] = args['batch_scale']
   
   if os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
     os.environ['device'] = 'cpu'
