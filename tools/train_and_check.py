@@ -214,6 +214,10 @@ def train_one_epoch(
       if res > best_score:
         best_model = copy.deepcopy(model.state_dict())
         best_score = res
+  
+  # End of one epoch, update.
+  optimizer.step()
+  optimizer.zero_grad()
 
   model.step = step
   
