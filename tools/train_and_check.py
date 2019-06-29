@@ -118,7 +118,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       # for i in range(C):
       #   writer.add_scalars('fold{}/Multiclass/'.format(model.fold)+classes[i], {
       #     'Val Precision': met_precision_recall[classes[i]][0],
-      #     'Val Recall': met_precision_recall[classes[i]][1]
+      #     'Val Recall': met_precision_reall[classes[i]][1]
       #   }, step)
       if criterion is not None:
         writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold), {'Val Loss': running_loss}, step)

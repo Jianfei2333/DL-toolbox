@@ -111,7 +111,9 @@ def loadmodels(models):
     filepath = '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
     if (os.path.exists('{}fold{}/best.pkl'.format(os.environ['savepath'], i))):
       checkpoint = load(filepath)
-      models[i].load_state_dict(checkpoint['state_dict'])
+      dic = torch.load(filepath, map_location=os.environ['device'])
+      # models[i].load_state_dict(checkpoint['state_dict'])
+      models[i].load_state_dict(dic)
       os.environ['tb-logdir'] = checkpoint['tb-logdir']
       models[i].step = int(checkpoint['step'])
       models[i].epochs = int(checkpoint['epochs'])
