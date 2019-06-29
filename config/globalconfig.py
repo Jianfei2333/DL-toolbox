@@ -21,21 +21,27 @@ def run(args, create=True):
   model = args['model']
   data = args['data']
   # Global environment variables.
-  user = os.popen('whoami').readline()
+  user = os.popen('hostname').readline()
   from tools import deviceSelector as d
   # os.environ['step'] = '0'
-  if user.find('jianfei') == -1:
-    os.environ['where_am_i'] = 'pc'
-    os.environ['datapath'] = '/home/huihui/Data/'
-    os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
-    os.environ['logfile-dir'] = '/home/huihui/Log/runlog/'
-    os.environ['savepath'] = '/home/huihui/Models/'
-  else:
+  if user.find('amax') == 1:
     os.environ['where_am_i'] = 'lab'
     os.environ['datapath'] = '/data0/share/'
     os.environ['tb-logdir'] = '/data0/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/data0/jianfei/runlog/'
     os.environ['savepath'] = '/data0/jianfei/models/'
+  elif user.find('pc') == -1:
+    os.environ['where_am_i'] = 'lab'
+    os.environ['datapath'] = '/home/jianfei/Data'
+    os.environ['tb-logdir'] = '/home/jianfei/tensorboard-log/'
+    os.environ['logfile-dir'] = '/home/jianfei/runlog/'
+    os.environ['savepath'] = '/homt/jianfei/models/'
+  else:
+    os.environ['where_am_i'] = 'pc'
+    os.environ['datapath'] = '/home/huihui/Data/'
+    os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
+    os.environ['logfile-dir'] = '/home/huihui/Log/runlog/'
+    os.environ['savepath'] = '/home/huihui/Models/'
   t = time.asctime().replace(' ', '-')
   os.environ['datapath'] += data + '/'
   os.environ['logfile-dir'] += t + model + '-' + data + '/'
