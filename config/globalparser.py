@@ -11,5 +11,5 @@ def getparser():
   parser.add_argument('--data', help='Set the data path.', default='')
   parser.add_argument('--model', help='Set the model path.', default='')
   parser.add_argument('--gpus', type=int, help='Choose the total number of gpus to use.', default=1)
-  parser.add_argument('--type', help='Type of submit file to generate, default "Val", choice ("Val", "Test")', default='Val')
+  parser.add_argument('--type', help='Type of submit file to generate, default "Val", choice ("Val", "Test"). Used when ', default='Val')
   return parser
