@@ -11,5 +11,5 @@ def load(model):
     ids = os.environ['device'][5:]
     ids = [int(x) for x in ids.split(',')]
     model = nn.DataParallel(model, device_ids=ids)
-    model = model.to(device='cuda:{}'.format(device_ids[0]))
+    model = model.to(device='cuda:{}'.format(ids[0]))
   return model
