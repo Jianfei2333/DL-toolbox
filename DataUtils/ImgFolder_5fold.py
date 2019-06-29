@@ -11,7 +11,7 @@ import torchvision.datasets as dset
 
 datapath = os.environ['datapath']
 
-def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 4, 'pin_memory': True}):
+def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 10, 'pin_memory': True}):
 
   print ("Collecting data ...")
 
