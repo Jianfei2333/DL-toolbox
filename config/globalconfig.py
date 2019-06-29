@@ -32,10 +32,10 @@ def run(args, create=True):
     os.environ['savepath'] = '/data0/jianfei/models/'
   elif user.find('pc') == -1:
     os.environ['where_am_i'] = 'lab'
-    os.environ['datapath'] = '/home/jianfei/Data/'
+    os.environ['datapath'] = '/data0/jianfei/Data/'
     os.environ['tb-logdir'] = '/home/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/home/jianfei/runlog/'
-    os.environ['savepath'] = '/homt/jianfei/models/'
+    os.environ['savepath'] = '/home/jianfei/models/'
   else:
     os.environ['where_am_i'] = 'pc'
     os.environ['datapath'] = '/home/huihui/Data/'
