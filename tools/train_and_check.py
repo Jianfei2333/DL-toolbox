@@ -31,6 +31,7 @@ def getElapse(since):
 
 def getScores(loader, model):
   device = os.environ['device']
+  device=device[:device.find(',')]
 
   model.eval()
   with torch.no_grad():
@@ -66,6 +67,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
     print ('* * * * * * * * * * * * * * * * * * * * * * * *')
 
   device=os.environ['device']
+  device=device[:device.find(',')]
 
   classes = loader.dataset.classes
   C = len(classes)
@@ -151,6 +153,7 @@ def train_one_epoch(
   best_model = info['best']['model']
 
   device = os.environ['device']
+  device=device[:device.find(',')]
   print_every = int(os.environ['print_every'])
   save_every = int(os.environ['save_every'])
 
@@ -252,7 +255,10 @@ def train(
   weights = dataloader['train'].dataset.weights
   train_weights = 1 / weights
   s = np.sum(train_weights)
-  train_weights = torch.from_numpy(train_weights / s).to(device=os.environ['device'], dtype=torch.float32)
+  device = os.environ['device']
+  device=device[:device.find(',')]
+
+  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
 
   info = {
       'since': since,
@@ -300,7 +306,10 @@ def train5folds(
   weights = dataloaders[0]['train'].dataset.weights
   train_weights = 1 / weights
   s = np.sum(train_weights)
-  train_weights = torch.from_numpy(train_weights / s).to(device=os.environ['device'], dtype=torch.float32)
+  device = os.environ['device']
+  device=device[:device.find(',')]
+
+  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
 
   info = [None, None, None, None, None]
   for i in range(5):

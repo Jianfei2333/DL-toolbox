@@ -1,4 +1,5 @@
 from efficientnet_pytorch import EfficientNet
+from tools import modelLoader
 import torch.nn as nn
 
 from config import globalconfig
@@ -23,7 +24,8 @@ def load(info, Continue=False):
 
   params = []
   for i in range(5):
-    models[i] = models[i].to(device=os.environ['device'])
+    # models[i] = models[i].to(device=os.environ['device'])
+    models[i] = modelLoader.load(models[i])
     params_to_update = []
     for name,param in models[i].named_parameters():
       if param.requires_grad == True:
