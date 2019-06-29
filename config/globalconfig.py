@@ -51,6 +51,7 @@ def run(args, create=True):
   os.environ['batch-size'] = args['batch_size']
   os.environ['print_every'] = args['print_every']
   os.environ['save_every'] = args['save_every']
+  os.environ['gpus'] = str(args['gpus'])
   
   if os.environ['where_am_i'] == 'pc' or args['gpus'] == 0:
     os.environ['device'] = 'cpu'
@@ -66,54 +67,12 @@ def run(args, create=True):
 
   print('Finish global configuration!')
 
-def update_filename(file):
-  """
-  Update logdir to take filename.
-
-  Args:
-    file: String of __file__, which is the full path of file.
-
-  Return:
-    None, but set environment parameters.
-      tb-logdir: tb-logdir + '-' + filename
-      filename: String of entrance file name.(Without postfix '.py')
-      savepath: savepath + filename + '/'
-  """
-  s = file.rfind('/')
-  e = file.find('.')
-  filename = file[s+1:e]
-  os.environ['tb-logdir'] += '-' + filename
-  os.environ['savepath'] += filename + '/'
-  os.environ['logfile-dir'] += filename + '.log'
-  os.environ['filename'] = filename
-  if not os.path.exists(os.environ['savepath']):
-    os.mkdir(os.environ['savepath'])
-    for i in range(5):
-      os.mkdir(os.environ['savepath']+'fold{}/'.format(i))
-    print ('Create dir', os.environ['savepath'])
-
-def update_parser_params(args):
-  """
-  """
-  from tools import deviceSelector as d
-  os.environ['batch-size'] = args['batch_size']
-  os.environ['print_every'] = args['print_every']
-  os.environ['save_every'] = args['save_every']
-  if args['gpus'] != 1:
-    if args['gpus'] == 0:
-      os.environ['device'] = 'cpu'
-    else:
-      gs = d.get_gpu_choice(args['gpus'])
-      os.environ['device'] = 'cuda:'+gs
-
 def loadmodels(models):
   for i in range(5):
     filepath = '{}fold{}/best.pkl'.format(os.environ['savepath'], i)
     if (os.path.exists('{}fold{}/best.pkl'.format(os.environ['savepath'], i))):
-      # checkpoint = load(filepath)
       checkpoint = torch.load(filepath, map_location=torch.device('cpu'))
       models[i].load_state_dict(checkpoint['state_dict'])
-      # models[i].load_state_dict(dic)
       os.environ['tb-logdir'] = checkpoint['tb-logdir']
       models[i].step = int(checkpoint['step'])
       models[i].epochs = int(checkpoint['epochs'])

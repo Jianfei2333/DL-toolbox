@@ -1,5 +1,6 @@
 from torchvision import models as Models
 import torch.nn as nn
+from tools import modelLoader
 
 from config import globalconfig
 import os
@@ -23,7 +24,8 @@ def load(info, Continue=False):
 
   params = []
   for i in range(5):
-    models[i] = models[i].to(device=os.environ['device'])
+    # models[i] = models[i].to(device=os.environ['device'])
+    models[i] = modelLoader.load(models[i])
     params_to_update = []
     for name,param in models[i].named_parameters():
       if param.requires_grad == True:
