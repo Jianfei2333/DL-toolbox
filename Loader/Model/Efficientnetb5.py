@@ -24,8 +24,8 @@ def load(info, Continue=False):
 
   params = []
   for i in range(5):
-    # models[i] = models[i].to(device=os.environ['device'])
-    models[i] = modelLoader.load(models[i])
+    models[i] = models[i].to(device='cpu')
+    # models[i] = modelLoader.load(models[i])
     params_to_update = []
     for name,param in models[i].named_parameters():
       if param.requires_grad == True:
