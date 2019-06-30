@@ -35,7 +35,7 @@ def run(args, create=True):
     os.environ['datapath'] = '/data0/jianfei/Data/'
     os.environ['tb-logdir'] = '/home/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/home/jianfei/runlog/'
-    os.environ['savepath'] = '/home/jianfei/models/'
+    os.environ['savepath'] = '/data0/jianfei/models/'
   else:
     os.environ['where_am_i'] = 'pc'
     os.environ['datapath'] = '/home/huihui/Data/'
