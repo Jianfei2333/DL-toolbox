@@ -15,13 +15,6 @@ def load(info, Continue=False):
 
   # print (model)
 
-  if Continue:
-    models = globalconfig.loadmodels(models)
-  else:
-    for i in range(5):
-      models[i].step=0
-      models[i].epochs=0
-
   params = []
   for i in range(5):
     models[i] = models[i].to(device='cpu')
@@ -31,6 +24,13 @@ def load(info, Continue=False):
       if param.requires_grad == True:
         params_to_update.append(param)
     params.append(params_to_update)
+
+  if Continue:
+    models = globalconfig.loadmodels(models)
+  else:
+    for i in range(5):
+      models[i].step=0
+      models[i].epochs=0
   
   modelinfo = {
     'inputsize': (224, 224)
