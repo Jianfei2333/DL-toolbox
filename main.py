@@ -27,9 +27,9 @@ info = datainfo.getdatainfo(os.environ['datapath'])
 
 models, params, modelinfo = model.load(info, args['continue'])
 
-from tools import modelLoader
-for i in range(len(models)):
-  models[i] = modelLoader.load(models[i])
+# from tools import modelLoader
+# for i in range(len(models)):
+#   models[i] = modelLoader.load(models[i])
 
 transform = transform.load(modelinfo, info)
 

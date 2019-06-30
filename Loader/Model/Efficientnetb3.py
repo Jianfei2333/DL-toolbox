@@ -15,22 +15,22 @@ def load(info, Continue=False):
 
   # print (model)
 
+  params = []
+  for i in range(5):
+    # models[i] = models[i].to(device='cpu')
+    models[i] = modelLoader.load(models[i])
+    params_to_update = []
+    for name,param in models[i].named_parameters():
+      if param.requires_grad == True:
+        params_to_update.append(param)
+    params.append(params_to_update)
+
   if Continue:
     models = globalconfig.loadmodels(models)
   else:
     for i in range(5):
       models[i].step=0
       models[i].epochs=0
-
-  params = []
-  for i in range(5):
-    models[i] = models[i].to(device='cpu')
-    # models[i] = modelLoader.load(models[i])
-    params_to_update = []
-    for name,param in models[i].named_parameters():
-      if param.requires_grad == True:
-        params_to_update.append(param)
-    params.append(params_to_update)
   
   modelinfo = {
     'inputsize': (300, 300)
