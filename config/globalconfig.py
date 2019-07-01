@@ -24,7 +24,7 @@ def run(args, create=True):
   user = os.popen('hostname').readline()
   from tools import deviceSelector as d
   # os.environ['step'] = '0'
-  if user.find('amax') == 1:
+  if user.find('amax') != -1:
     os.environ['where_am_i'] = 'lab'
     os.environ['datapath'] = '/data0/share/'
     os.environ['tb-logdir'] = '/data0/jianfei/tensorboard-log/'
