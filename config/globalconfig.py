@@ -33,6 +33,10 @@ def run(args, create=True):
   elif user.find('pc') == -1:
     os.environ['where_am_i'] = 'lab'
     os.environ['datapath'] = '/data0/jianfei/Data/'
+    if not os.path.exists(os.environ['datapath']):
+      os.environ['datapath'] = '/data/jianfei/Data/'
+    else:
+      os.environ['datapath'] = '/data1/jianfei/Data/'
     os.environ['tb-logdir'] = '/home/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/home/jianfei/runlog/'
     os.environ['savepath'] = '/home/jianfei/models/'
