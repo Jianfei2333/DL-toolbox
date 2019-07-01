@@ -32,8 +32,9 @@ def run(args, create=True):
     os.environ['savepath'] = '/data0/jianfei/models/'
   elif user.find('pc') == -1:
     os.environ['where_am_i'] = 'lab'
-    os.environ['datapath'] = '/data0/jianfei/Data/'
-    if not os.path.exists(os.environ['datapath']):
+    if os.path.exists('/data0/jianfei/Data'):
+      os.environ['datapath'] = '/data0/jianfei/Data/'
+    elif os.path.exists('/data/jianfei/Data'):
       os.environ['datapath'] = '/data/jianfei/Data/'
     else:
       os.environ['datapath'] = '/data1/jianfei/Data/'
