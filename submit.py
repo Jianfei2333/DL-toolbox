@@ -7,7 +7,7 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args, False)
 
-print ('Testing {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
+print ('Generating submit file {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
 import importlib
 # Essential network building blocks.
