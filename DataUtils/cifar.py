@@ -11,7 +11,21 @@ import copy
 DATAPATH='/data0/share/cifar10/'
 
 def getdata(unknown=[6,7,8,9], batch=64, transform=None):
+  """
+  getdata: get cifar-10 data with customed unknown classes.
   
+    Args:
+      - unknown: list, index of classes that is unknown.
+      - batch: batch size.
+      - transform: torchvision.transfrom.
+    
+    Returns:
+      An object:
+        - 'train': cifar-10 train dataloader.
+        - 'val': cifar-10 validation dataloader.
+        - 'train_sample': a sample dataloader for test running. A sample is conducted with 100 images each class (train & val total).
+        - 'val_sample': a sample dataloader for test running.
+  """
   print ("Collecting data...")
 
   sample_train = np.load(DATAPATH+'sample_train.npy')
