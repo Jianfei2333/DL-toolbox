@@ -358,6 +358,7 @@ def train5folds(
       res = train_one_epoch(models[i], dataloaders[i], optimizers[i], criterion, info[i])
       models[i] = res['model']
       models[i] = modelLoader.moveback(models[i])
+      release(res['model'])
 
       best = res['best']
       info[i]['best']['score'] = best['score']
