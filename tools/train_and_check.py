@@ -11,6 +11,14 @@ import copy
 
 writer = writer()
 
+def release(*argv):
+  for v in argv:
+    v.cpu()
+  ids = os.environ['device'][5:]
+  ids = [int(x) for x in ids.split(',')]
+  torch.cuda.set_device('cuda:{}'.format(ids[0]))
+  torch.cuda.empty_cache()
+
 def savemodel(filename, model):
   savefilepath = '{}fold{}/{}'.format(os.environ['savepath'], model.fold, filename)
   # Save the checkpoint.
@@ -84,12 +92,15 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       x = x.to(device=device, dtype=torch.float)
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
+      release(x)
 
       if criterion is not None:
         loss_weights = kwargs['loss_weights']
         running_loss += criterion(scores, y, loss_weights).item()
 
       _, preds = scores.max(1)
+      release(scores)
+
       # Prediction array
       if y_pred is None:
         y_pred = preds.cpu().numpy()
@@ -100,6 +111,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
         y_true = y.cpu().numpy()
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
+      release(y)
 
     met_acc = accuracy(y_true, y_pred)
     met_confusion_matrix = cmatrix(y_true, y_pred, classes)
@@ -179,6 +191,7 @@ def train_one_epoch(
     scores = model(x)
     loss = criterion(scores, y, train_weights)
     loss = loss/batch_scale
+    release(x, scores)
 
     # writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)
     step += 1
