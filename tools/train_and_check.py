@@ -6,6 +6,7 @@ import time
 from config.globaltb import writer
 from tools.metrics import cmatrix, precision_recall, accuracy
 import sklearn.metrics as metrics
+from tools import modelLoader
 import copy
 
 writer = writer()
@@ -343,8 +344,12 @@ def train5folds(
       print ('Fold {}:'.format(i))
       models[i].fold = i
       info[i]['e'] = e
+
+      models[i] = modelLoader.move(models[i])
       res = train_one_epoch(models[i], dataloaders[i], optimizers[i], criterion, info[i])
       models[i] = res['model']
+      models[i] = modelLoader.moveback(models[i])
+
       best = res['best']
       info[i]['best']['score'] = best['score']
       info[i]['best']['model'] = copy.deepcopy(best['model'])

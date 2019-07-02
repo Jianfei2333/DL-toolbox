@@ -17,5 +17,22 @@ def load(model):
     if hasattr(model, 'epochs'):
       epochs = model.epochs
       model_p.epochs = epochs
-    model_p = model_p.to(device='cuda:{}'.format(ids[0]))
+    model_p = model_p.to(device='cpu')
+    # model_p = model_p.to(device='cuda:{}'.format(ids[0]))
   return model_p
+
+def move(model):
+  d = int(os.environ['gpus'])
+  if d >= 1:
+    ids = os.environ['device'][5:]
+    ids = [int(x) for x in ids.split(',')]
+    model = model.to(device='cuda:{}'.format(ids[0]))
+  return model
+
+def moveback(model):
+  d = int(os.environ['gpus'])
+  if d >= 1:
+    ids = os.environ['device'][5:]
+    ids = [int(x) for x in ids.split(',')]
+    model = model.to(device='cpu')
+  return model
