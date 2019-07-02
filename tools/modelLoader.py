@@ -1,5 +1,6 @@
 import os
 import torch.nn as nn
+import torch
 
 def load(model):
   d = int(os.environ['gpus'])
@@ -35,4 +36,6 @@ def moveback(model):
     ids = os.environ['device'][5:]
     ids = [int(x) for x in ids.split(',')]
     model = model.to(device='cpu')
+    torch.cuda.set_device('cuda:{}'.format(ids[0]))
+    torch.cuda.empty_cache()
   return model
