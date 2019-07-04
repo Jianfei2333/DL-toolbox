@@ -77,5 +77,3 @@ def getdata(unknown=[6,7,8,9], batch=64, transform=None):
     'train_sample': train_sample_dataloader,
     'val_sample': val_sample_dataloader
   }
-
-getdata()
