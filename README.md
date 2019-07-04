@@ -44,7 +44,11 @@ Deep Learning Toolbox in PyTorch with Tensorboard with Tensorboard.
       --gpus GPUS           Choose the total number of gpus to use.
     ```
 
-3. Model zoo.
+3. Help function.
+
+    You can run ```python help.py``` to check which model and dataset could you use.
+
+4. Model zoo.
 
     > Usage: ```python main.py --model MODEL_NAME```
 

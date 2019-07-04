@@ -56,7 +56,6 @@ def getScores(loader, model):
         total_scores = score
   return total_scores
 
-
 def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
   """
   Check the accuracy of the model on validation set / test set.
@@ -109,6 +108,8 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
         y_true = y.cpu().numpy()
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
+
+    running_loss = running_loss / loader.dataset.__len__()
 
     met_acc = accuracy(y_true, y_pred)
     met_confusion_matrix = cmatrix(y_true, y_pred, classes)
