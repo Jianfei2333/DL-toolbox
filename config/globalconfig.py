@@ -30,6 +30,12 @@ def run(args, create=True):
     os.environ['tb-logdir'] = '/data0/jianfei/tensorboard-log/'
     os.environ['logfile-dir'] = '/data0/jianfei/runlog/'
     os.environ['savepath'] = '/data0/jianfei/models/'
+  elif user.find('Torch') != -1:
+    os.environ['where_am_i'] = 'tianhe'
+    os.environ['datapath'] = '/home/sysu_issjyin_2/jianfei/Data/'
+    os.environ['tb-logdir'] = '/home/sysu_issjyin_2/jianfei01-torch/logs'
+    os.environ['logfile-dir'] = '/home/sysu_issjyin_2/jianfei/runlog/'
+    os.environ['savepath'] = '/home/sysu_issjyin_2/jianfei/models/'
   elif user.find('pc') == -1:
     os.environ['where_am_i'] = 'lab'
     if os.path.exists('/data0/jianfei/Data'):
