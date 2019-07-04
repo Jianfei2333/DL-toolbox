@@ -8,7 +8,7 @@ import torchvision.transforms as T
 import numpy as np
 import copy
 
-DATAPATH='/data0/share/cifar10/'
+DATAPATH='/home/huihui/Data/cifar10/'
 
 def getdata(unknown=[6,7,8,9], batch=64, transform=None):
   """
@@ -50,11 +50,11 @@ def getdata(unknown=[6,7,8,9], batch=64, transform=None):
 
   to_move_ind = np.intersect1d(train_ind, unknown_idxs)
   train_ind = np.setdiff1d(train_ind, to_move_ind)
-  val_ind = np.union1d(val_ind, to_move_ind)
+  val_ind = np.union1d(val_ind, to_move_ind).astype('int')
 
   to_move_sample = np.intersect1d(sample_train, unknown_idxs)
   sample_train = np.setdiff1d(sample_train, to_move_sample)
-  sample_val = np.union1d(sample_val, to_move_sample)
+  sample_val = np.union1d(sample_val, to_move_sample).astype('int')
   
   c2i = copy.deepcopy(data.class_to_idx)
   for k in data.class_to_idx:
@@ -77,3 +77,5 @@ def getdata(unknown=[6,7,8,9], batch=64, transform=None):
     'train_sample': train_sample_dataloader,
     'val_sample': val_sample_dataloader
   }
+
+getdata()
