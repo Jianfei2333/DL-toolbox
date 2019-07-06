@@ -8,7 +8,7 @@ import os
 # datapath
 #   - groundtruth.csv
 # * * * * * * * * *
-datapath = '/home/huihui/Data/ISIC2018'
+datapath = '/home/huihui/Data/ISIC2018_refold'
 
 def toimagefolder():
   """
@@ -39,23 +39,28 @@ def get5folds():
   """
   Create validation set index and 
   """
-  data = pd.read_csv(datapath+'/groundtruth.csv')
-  labels = data.columns[1:]
-  C = labels.shape[0]
-  
+  import torchvision.datasets as dset
+  data = dset.ImageFolder(datapath+'/Data')
+  # data = pd.read_csv(datapath+'/groundtruth.csv')
+  classes = np.array(data.samples)[:, 1]
+  C = np.unique(classes).shape[0]
+
   folds = [np.array([]) for i in range(5)]
   for i in range(C):
-    col = data[labels[i]]
-    mask = col == 1
-    imgs = data.index[mask].to_list()
-    np.random.shuffle(imgs)
-    c_folds = np.array_split(imgs, 5)
+    # col = data[labels[i]]
+    # mask = col == 1
+    # imgs = data.index[mask].to_list()
+    # np.random.shuffle(imgs)
+    # c_folds = np.array_split(imgs, 5)
+    # folds = [np.hstack((folds[i], c_folds[i])) for i in range(5)]
+    inds = np.where(classes == '{}'.format(i))[0]
+    np.random.shuffle(inds)
+    c_folds = np.array_split(inds, 5)
     folds = [np.hstack((folds[i], c_folds[i])) for i in range(5)]
-  
   print (len(folds))
   for _ in range(5):
     print(folds[_].shape)
-    np.save('{}/{}folds.npy'.format(datapath, str(_)), folds[_])
+    np.save('{}/{}fold.npy'.format(datapath, str(_)), folds[_])
 
   # np.save('/home/huihui/Data/ISIC2018/validation.npy', validation)
   # np.save('/home/huihui/Data/ISIC2018/train.npy', train)
