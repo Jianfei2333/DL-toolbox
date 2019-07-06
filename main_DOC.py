@@ -7,6 +7,8 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args)
 
+os.environ['savepath'] += '-DOC'
+
 print ('Train {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
 import importlib
