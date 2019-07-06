@@ -7,7 +7,10 @@ def load(model):
   if d == 0:
     model_p = model.to(device='cpu')
   elif d == 1:
-    model_p = model.to(device=os.environ['device'])
+    id = os.environ['device'][5:]
+    id = int(id)
+    model_p = nn.DataParallel(model, device_ids=[id])
+    model_p = model_p.to(device=os.environ['device'])
   else:
     ids = os.environ['device'][5:]
     ids = [int(x) for x in ids.split(',')]
