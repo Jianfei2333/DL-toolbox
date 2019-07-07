@@ -417,7 +417,7 @@ def train_one_epoch_DOC(
       )
       print (prompt)
       print ('* * * * * * * * * * * * * * * * * * * * * * * *')
-      res = check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'val'})
+      res = check_DOC(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'val'})
       print()
       if res > best_score:
         best_model = copy.deepcopy(model.state_dict())
@@ -429,7 +429,7 @@ def train_one_epoch_DOC(
 
   model.step = step
   
-  train_score = check(train4val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'train'})
+  train_score = check_DOC(train4val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'train'})
   
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
