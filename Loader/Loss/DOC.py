@@ -24,7 +24,9 @@ def loss(input, target, weight=None):
   sigmoid = 1 / (1 + torch.exp(-input))
   bias = torch.ones_like(input)
   bias[range(0, bias.shape[0]), target] = 0
-  log_sigmoid = torch.log(bias - sigmoid)
+  symbol = torch.ones_like(input)
+  symbol[range(0, bias.shape[0]), target] = -1
+  log_sigmoid = torch.log(bias - symbol * sigmoid)
   loss = -torch.sum(log_sigmoid)
   return loss
 

@@ -11,7 +11,7 @@ def load(info, Continue=False):
     models[i] = EfficientNet.from_pretrained('efficientnet-b5')
     # Modify.
     num_fcin = models[i]._fc.in_features
-    models[i]._fc = nn.Linear(num_fcin, len(info['classes'])-2)
+    models[i]._fc = nn.Linear(num_fcin, len(info['classes']))
 
   # print (model)
 
