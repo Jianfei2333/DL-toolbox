@@ -24,20 +24,18 @@ def getdata(transform={'train':None, 'val':None}, unknown=[0,3], kwargs={'num_wo
   i = 1
   classes = len(traindata.classes)
   for j in range(classes):
-    if j not in unknown:
+    if j in unknown:
+      ind_mapper[j] = 0
+    else:
       ind_mapper[j] = i
       i += 1
-    else:
-      continue
-  for j in unknown:
-    ind_mapper[j] = 0
 
   t = 0
   unknown_idxs = np.array([])
   for img, label in traindata:
-    traindata.targets[t] = ind_mapper[t]
-    train4valdata.targets[t] = ind_mapper[t]
-    valdata.targets[t] = ind_mapper[t]
+    traindata.targets[t] = ind_mapper[label]
+    train4valdata.targets[t] = ind_mapper[label]
+    valdata.targets[t] = ind_mapper[label]
     if label in unknown:
       unknown_idxs = np.hstack((unknown_idxs, t))
     t += 1
