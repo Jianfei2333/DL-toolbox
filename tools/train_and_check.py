@@ -195,7 +195,7 @@ def check_DOC(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       import importlib
       # DOC = importlib.import_module('Loader.Loss.DOC').DOCLoss()
       DOC = importlib.import_module('Loader.Loss.DOC')
-      preds = DOC.prediction(scores, np.where(classes == 'UNKNOWN')[0][0])
+      preds = DOC.prediction(scores, np.where(np.array(classes) == 'UNKNOWN')[0][0])
 
       # Prediction array
       if y_pred is None:
