@@ -31,7 +31,7 @@ def loss(input, target, weight=None):
   loss = -torch.sum(log_sigmoid)
   return loss
 
-def prediction(input, t=0.5, weight=None):
+def prediction(input, unknown_ind, t=0.5, weight=None):
   sigmoid = 1 / (1 + torch.exp(-input))
   values, indices = sigmoid.max(1)
   if int(os.environ['gpus']) == 0:
@@ -40,5 +40,5 @@ def prediction(input, t=0.5, weight=None):
     device = os.environ['device']
   else:
     device = os.environ['device'][:6]
-  predict = torch.where(values > t, indices, torch.tensor([-1]).to(device=device))
+  predict = torch.where(values > t, indices, torch.tensor([unknown_ind]).to(device=device))
   return predict
