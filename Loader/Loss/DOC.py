@@ -12,7 +12,7 @@ class DOCLoss(nn.Module):
     bias[range(0, bias.shape[0]), target] = 0
     log_sigmoid = torch.log(bias - sigmoid)
     loss = -torch.sum(log_sigmoid)
-    return loss.item()
+    return loss
 
   def prediction(input, t=0.5, weight=None):
     sigmoid = 1 / (1 + torch.exp(-input))
