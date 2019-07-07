@@ -193,7 +193,7 @@ def check_DOC(loader, model, step, criterion=None, kwargs={'mode':'val'}):
 
       # _, preds = scores.max(1)
       import importlib
-      DOC = importlib.import_module('Loader.Loss.DOC')
+      DOC = importlib.import_module('Loader.Loss.DOC').DOCLoss()
       preds = DOC.prediction(scores)
 
       # Prediction array

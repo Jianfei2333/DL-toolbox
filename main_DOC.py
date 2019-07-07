@@ -49,7 +49,7 @@ for i in range(5):
 # criterion = nn.functional.cross_entropy
 # criterion = RecallWeightedCrossEntropy.recall_cross_entropy
 # if args['loss'] != '':
-criterion = importlib.import_module('Loader.Loss.DOC').loss
+criterion = importlib.import_module('Loader.Loss.DOC').DOCLoss()
 
 from tools import train_and_check as mtool
 
