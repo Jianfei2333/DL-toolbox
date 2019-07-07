@@ -8,7 +8,7 @@ import os
 # datapath
 #   - groundtruth.csv
 # * * * * * * * * *
-datapath = '/home/huihui/Data/ISIC2018_refold'
+datapath = '/home/huihui/Data/ISIC2018_openset'
 
 def toimagefolder():
   """

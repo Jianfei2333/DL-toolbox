@@ -12,47 +12,16 @@ import torchvision.datasets as dset
 
 datapath = os.environ['datapath']
 
-def getdata(transform={'train':None, 'val':None}, unknown=[0,3], kwargs={'num_workers': 20, 'pin_memory': True}):
+def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 20, 'pin_memory': True}):
 
   print ("Collecting data ...")
 
   traindata = dset.ImageFolder(datapath+'Data', transform=transform['train'])
   train4valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
+
+  unknown_idxs = np.where(np.array(traindata.samples)[:,1] == traindata.class_to_ind('UNKNOWN'))[0]
   
-  ind_mapper = {}
-  i = 1
-  classes = len(traindata.classes)
-  for j in range(classes):
-    if j in unknown:
-      ind_mapper[j] = 0
-    else:
-      ind_mapper[j] = i
-      i += 1
-
-  t = 0
-  unknown_idxs = np.array([])
-  for img, label in traindata:
-    traindata.targets[t] = ind_mapper[label]
-    train4valdata.targets[t] = ind_mapper[label]
-    valdata.targets[t] = ind_mapper[label]
-    if label in unknown:
-      unknown_idxs = np.hstack((unknown_idxs, t))
-    t += 1
-
-  c2i = copy.deepcopy(traindata.class_to_idx)
-  for k in traindata.class_to_idx:
-    c2i[k] = ind_mapper[c2i[k]]
-    if traindata.class_to_idx[k] in unknown:
-      del(c2i[k])
-  c2i['unknown'] = 0
-  traindata.class_to_idx = c2i
-  traindata.classes = list(c2i.keys())
-  train4valdata.class_to_idx = c2i
-  train4valdata.classes = list(c2i.keys())
-  valdata.class_to_idx = c2i
-  valdata.classes = list(c2i.keys())
-
   labels = np.array(traindata.imgs)[:, 1]
   C = len(traindata.classes)
 
