@@ -31,7 +31,7 @@ models, params, modelinfo = model.load(info, args['continue'])
 # for i in range(len(models)):
 #   models[i] = modelLoader.load(models[i])
 
-transform = transform.load(modelinfo, [0,3], info)
+transform = transform.load(modelinfo, info)
 
 # GOT DATA
 dataloaders = data.getdata(transform)
