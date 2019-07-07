@@ -618,7 +618,7 @@ def train5folds_DOC(
       info[i]['e'] = e
 
       models[i] = modelLoader.move(models[i])
-      res = train_one_epoch(models[i], dataloaders[i], optimizers[i], criterion, info[i])
+      res = train_one_epoch_DOC(models[i], dataloaders[i], optimizers[i], criterion, info[i])
       models[i] = res['model']
       models[i] = modelLoader.moveback(models[i])
       release(res['model'])
