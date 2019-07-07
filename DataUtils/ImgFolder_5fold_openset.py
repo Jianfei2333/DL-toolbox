@@ -24,9 +24,9 @@ def getdata(transform={'train':None, 'val':None}, unknown=[0,3], kwargs={'num_wo
   unknown_idxs = np.array([])
   for img, label in traindata:
     if label in unknown:
-      traindata.targets[t] = -1
-      train4valdata.targets[t] = -1
-      valdata.targets[t] = -1
+      traindata.targets[t] = 10
+      train4valdata.targets[t] = 10
+      valdata.targets[t] = 10
       unknown_idxs = np.hstack((unknown_idxs, t))
     t += 1
 
@@ -34,7 +34,7 @@ def getdata(transform={'train':None, 'val':None}, unknown=[0,3], kwargs={'num_wo
   for k in traindata.class_to_idx:
     if traindata.class_to_idx[k] in unknown:
       del(c2i[k])
-  c2i['unknown'] = -1
+  c2i['unknown'] = 10
   traindata.class_to_idx = c2i
   traindata.classes = list(c2i.keys())
   train4valdata.class_to_idx = c2i
