@@ -20,7 +20,7 @@ def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 20, 'pi
   train4valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
 
-  unknown_idxs = np.where(np.array(traindata.samples)[:,1] == traindata.class_to_ind('UNKNOWN'))[0]
+  unknown_idxs = np.where(np.array(traindata.samples)[:,1] == traindata.class_to_idx('UNKNOWN'))[0]
   
   labels = np.array(traindata.imgs)[:, 1]
   C = len(traindata.classes)
