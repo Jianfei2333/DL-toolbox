@@ -7,8 +7,6 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args)
 
-os.environ['savepath'] += '-DOC'
-
 print ('Train {} with {}.(Running on {})'.format(os.environ['savepath'], os.environ['datapath'], os.environ['device']))
 
 import importlib
@@ -33,7 +31,7 @@ models, params, modelinfo = model.load(info, args['continue'])
 # for i in range(len(models)):
 #   models[i] = modelLoader.load(models[i])
 
-transform = transform.load(modelinfo, info)
+transform = transform.load(modelinfo, [0,3], info)
 
 # GOT DATA
 dataloaders = data.getdata(transform)
