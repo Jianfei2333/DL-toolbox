@@ -20,21 +20,34 @@ def getdata(transform={'train':None, 'val':None}, unknown=[0,3], kwargs={'num_wo
   train4valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   valdata = dset.ImageFolder(datapath+'Data', transform=transform['val'])
   
+  ind_mapper = {}
+  i = 1
+  classes = len(traindata.classes)
+  for j in range(classes):
+    if j not in unknown:
+      ind_mapper[j] = i
+      i += 1
+    else:
+      continue
+  for j in unknown:
+    ind_mapper[j] = 0
+
   t = 0
   unknown_idxs = np.array([])
   for img, label in traindata:
+    traindata.targets[t] = ind_mapper[t]
+    train4valdata.targets[t] = ind_mapper[t]
+    valdata.targets[t] = ind_mapper[t]
     if label in unknown:
-      traindata.targets[t] = 10
-      train4valdata.targets[t] = 10
-      valdata.targets[t] = 10
       unknown_idxs = np.hstack((unknown_idxs, t))
     t += 1
 
   c2i = copy.deepcopy(traindata.class_to_idx)
   for k in traindata.class_to_idx:
+    c2i[k] = ind_mapper[c2i[k]]
     if traindata.class_to_idx[k] in unknown:
       del(c2i[k])
-  c2i['unknown'] = 10
+  c2i['unknown'] = 0
   traindata.class_to_idx = c2i
   traindata.classes = list(c2i.keys())
   train4valdata.class_to_idx = c2i
