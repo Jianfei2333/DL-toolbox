@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import os
 
 class DOCLoss(nn.Module):
   def __init__(self):
@@ -33,5 +34,11 @@ def loss(input, target, weight=None):
 def prediction(input, t=0.5, weight=None):
   sigmoid = 1 / (1 + torch.exp(-input))
   values, indices = sigmoid.max(1)
-  predict = torch.where(values > t, indices, torch.tensor([-1]))
+  if int(os.environ['gpus']) == 0:
+    device = 'cpu'
+  elif int(os.environ['gpus']) == 1:
+    device = os.environ['device']
+  else:
+    device = os.environ['device'][:6]
+  predict = torch.where(values > t, indices, torch.tensor([-1]).to(device=device))
   return predict
