@@ -24,7 +24,7 @@ def run(args, create=True):
   t = time.strftime('%m-%d-%Y-%H:%M:%S')
   identification = '_'.join([model, data, t, remark])
   import hashlib
-  id_code = hashlib.sha512(bytes(identification)).hexdigest()[:7]
+  id_code = hashlib.sha512(bytes(identification, 'utf-8')).hexdigest()[:7]
   identification = '_'.join([identification, id_code])
   os.environ['id'] = identification
 
