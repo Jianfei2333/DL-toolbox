@@ -7,6 +7,7 @@ from config.globaltb import writer
 from tools.metrics import cmatrix, precision_recall, accuracy
 import sklearn.metrics as metrics
 from tools import modelLoader
+from config.dampconfig import damp
 import copy
 
 writer = writer()
@@ -315,6 +316,8 @@ def train(
       '{}fold{}/best.pkl'.format(os.environ['savepath'], model.fold)
     )
 
+    optimizer = damp(optimizer, e+1)
+
     writer.add_scalars('Aggragate/Score', {'Score': best['score']}, e+model.epochs)
     writer.add_scalars('Aggragate/Score', {'Train Score': res['train_score']}, e+model.epochs)
 
@@ -379,6 +382,8 @@ def train5folds(
       )
       mean_score += best['score']/5
       mean_train_score += res['train_score']/5
+
+      optimizers[i] = damp(optimizers[i], e+1)
 
     writer.add_scalars('CrossFolds/Score', {'Score': mean_score}, e+models[0].epochs)
     writer.add_scalars('CrossFolds/Score', {'Train Score': mean_train_score}, e+models[0].epochs)
