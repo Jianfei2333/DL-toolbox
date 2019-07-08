@@ -29,7 +29,7 @@ transform = transform.load(modelinfo, info)
 
 loader = data.getdata(args['type'], transform)
 
-from tools import train_and_check as mtool
+from tools import trainer as mtool
 
 # Get Filenames
 files = np.array(loader.dataset.imgs)

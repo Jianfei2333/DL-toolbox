@@ -15,7 +15,7 @@ model = importlib.import_module('Loader.Model.'+args['model'])
 transform = importlib.import_module('Loader.Transform.train_aug')
 
 # Data loader.
-from DataUtils import ImgFolder_5fold_openset as data
+from DataUtils import ImgFolder_5fold as data
 
 # Official packages.
 import torch.nn as nn
@@ -26,36 +26,27 @@ from tools import datainfo
 info = datainfo.getdatainfo(os.environ['datapath'])
 
 models, params, modelinfo = model.load(info, args['continue'])
-
-# from tools import modelLoader
-# for i in range(len(models)):
-#   models[i] = modelLoader.load(models[i])
+model = models[0]
+params = params[0]
 
 transform = transform.load(modelinfo, info)
 
 # GOT DATA
-dataloaders = data.getdata(transform)
+dataloader = data.getdata(transform)[0]
 
 # DEFINE MODEL
 
 # DEFINE OPTIMIZER
-optimizers = [None, None, None, None, None]
-for i in range(5):
-  optimizers[i] = optim.SGD(params[i], lr=args['learning_rate'], momentum=0.9)
-  # optimizer = optim.Adam(params[i], lr=args['learning_rate'])
+optimizer = optim.SGD(params, lr=args['learning_rate'], momentum=0.9)
 
-# criterion = nn.functional.cross_entropy
-# criterion = RecallWeightedCrossEntropy.recall_cross_entropy
-# if args['loss'] != '':
-# criterion = importlib.import_module('Loader.Loss.DOC').DOCLoss()
 criterion = importlib.import_module('Loader.Loss.DOC').loss
 
-from tools import train_and_check as mtool
+mtool = importlib.import_module('tools.trainer-DOC')
 
-mtool.train5folds_DOC(
-  models,
-  dataloaders,
-  optimizers,
+mtool.train(
+  model,
+  dataloader,
+  optimizer,
   criterion,
   args['epochs']
 )

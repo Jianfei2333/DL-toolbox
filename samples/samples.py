@@ -13,7 +13,7 @@ from Networks.Blocks import LinearReLU
 from DataUtils import cifar10
 
 # Useful tools.
-from tools import train_and_check as mtool
+from tools import trainer as mtool
 
 # Official packages.
 import torch

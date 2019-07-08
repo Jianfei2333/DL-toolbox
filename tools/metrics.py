@@ -133,7 +133,7 @@ def cmatrix(y_true, y_pred, classes):
   #   the 'Confusion matrix' in our mind, which is, prediction in each
   #   row, and condition in each column. The sklearn.metrics.confusion_matrix
   #   is prediction in each column, and condition in each row.
-  confusion_matrix = metrics.confusion_matrix(y_true, y_pred).T
+  confusion_matrix = metrics.confusion_matrix(y_true, y_pred, labels=list(range(len(classes)))).T
   df_cmatrix = pd.DataFrame(confusion_matrix, index=classes, columns=classes)
   
   return df_cmatrix

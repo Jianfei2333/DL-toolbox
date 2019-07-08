@@ -20,6 +20,14 @@ def run(args, create=True):
   """
   model = args['model']
   data = args['data']
+  remark = args['remark']
+  t = time.strftime('%m-%d-%Y-%H:%M:%S')
+  identification = '_'.join([model, data, t, remark])
+  import hashlib
+  id_code = hashlib.sha512(bytes(identification)).hexdigest()[:7]
+  identification = '_'.join([identification, id_code])
+  os.environ['id'] = identification
+
   # Global environment variables.
   user = os.popen('hostname').readline()
   from tools import deviceSelector as d
@@ -53,12 +61,11 @@ def run(args, create=True):
     os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
     os.environ['logfile-dir'] = '/home/huihui/Log/runlog/'
     os.environ['savepath'] = '/home/huihui/Models/'
-  t = time.asctime().replace(' ', '-')
   os.environ['datapath'] += data + '/'
-  os.environ['logfile-dir'] += t + model + '-' + data + '/'
-  os.environ['tb-logdir'] += t + model + '-' + data + '/'
-  os.environ['logfile-dir'] += t + model + '-' + data + '.log'
-  os.environ['savepath'] += model + '-' + data + '/'
+  os.environ['logfile-dir'] += identification + '/'
+  os.environ['tb-logdir'] += identification + '/'
+  os.environ['logfile-dir'] += identification + '.log'
+  os.environ['savepath'] += '_'.join([model, data, remark]) + '/'
   if create and not os.path.exists(os.environ['savepath']):
     os.mkdir(os.environ['savepath'])
     for i in range(5):
@@ -91,7 +98,12 @@ def loadmodels(models):
     if (os.path.exists('{}fold{}/best.pkl'.format(os.environ['savepath'], i))):
       checkpoint = torch.load(filepath, map_location=torch.device('cpu'))
       models[i].load_state_dict(checkpoint['state_dict'])
-      os.environ['tb-logdir'] = checkpoint['tb-logdir']
+      os.environ['id'] = checkpoint['id']
+      
+      tb = os.environ['tb-logdir']
+      ind = tb[:-1].rfind('/')
+      os.environ['tb-logdir'] = tb[:ind+1] + checkpoint['id']
+
       models[i].step = int(checkpoint['step'])
       models[i].epochs = int(checkpoint['epochs'])
   print('Checkpoint restored!') 
