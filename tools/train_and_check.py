@@ -209,8 +209,8 @@ def check_DOC(loader, model, step, criterion=None, kwargs={'mode':'val'}):
         y_true = np.hstack((y_true, y.cpu().numpy()))
 
     running_loss = running_loss / loader.dataset.__len__()
-    if mode == 'train':
-      classes = np.setdiff1d(classes, np.array(['UNKNOWN']))
+    # if mode == 'train':
+    #   classes = np.setdiff1d(classes, np.array(['UNKNOWN']))
     met_acc = accuracy(y_true, y_pred)
     met_confusion_matrix = cmatrix(y_true, y_pred, classes)
     met_precision_recall = precision_recall(y_true, y_pred, classes)
