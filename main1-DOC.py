@@ -15,7 +15,7 @@ model = importlib.import_module('Loader.Model.'+args['model'])
 transform = importlib.import_module('Loader.Transform.train_aug')
 
 # Data loader.
-from DataUtils import ImgFolder_5fold as data
+from DataUtils import ImgFolder_5fold_openset as data
 
 # Official packages.
 import torch.nn as nn
