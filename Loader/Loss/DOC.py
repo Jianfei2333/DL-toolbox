@@ -22,12 +22,11 @@ class DOCLoss(nn.Module):
     return predict
 
 def loss(input, target, unknown_ind, weight=None):
-  unknown_ind = int(unknown_ind)
   sigmoid = 1 - 1 / (1 + torch.exp(-input))
   sigmoid[range(0, sigmoid.shape[0]), target] = 1 - sigmoid[range(0, sigmoid.shape[0]), target]
   sigmoid = torch.log(sigmoid)
   sigmoid = torch.cat([sigmoid[:, :unknown_ind], sigmoid[:, unknown_ind+1:]], dim=1)
-  weight = torch.cat([weight[:unknown_ind], weight[unknown_ind+1:]])
+  weight = torch.cat([weight[:unknown_ind], weight[unknown_ind+1:]])/(1-weight[unknown_ind])
   if weight is not None:
     loss = -torch.sum(sigmoid * weight)
   else:
