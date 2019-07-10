@@ -41,7 +41,7 @@ for i in range(5):
   # optimizer = optim.Adam(params[i], lr=args['learning_rate'])
 
 criterion = nn.functional.cross_entropy
-
+  
 from tools import trainer as mtool
 
 mtool.train5folds(

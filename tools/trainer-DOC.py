@@ -88,10 +88,12 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
     y_pred = None
     y_true = None
     running_loss = 0.
+    count = 0
     for x, y in loader:
       x = x.to(device=device, dtype=torch.float)
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
+      count += y.shape[0]
 
       if criterion is not None:
         loss_weights = kwargs['loss_weights']
@@ -112,7 +114,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
 
-    running_loss = running_loss / loader.dataset.__len__()
+    running_loss = running_loss / count
     met_acc = accuracy(y_true, y_pred)
     met_confusion_matrix = cmatrix(y_true, y_pred, classes)
     met_precision_recall = precision_recall(y_true, y_pred, classes)
@@ -178,6 +180,8 @@ def train_one_epoch(
   train4val_dataloader = dataloader['train4val']
   val_dataloader = dataloader['val']
 
+  classes = train_dataloader.dataset.classes
+
   step = model.step
   total_e = model.epochs+e
   total_epochs = model.epochs+epochs
@@ -189,7 +193,7 @@ def train_one_epoch(
 
     # Forward prop.
     scores = model(x)
-    loss = criterion(scores, y, train_weights)
+    loss = criterion(scores, y, np.where(np.array(classes) == 'UNKNOWN')[0][0], train_weights)
     loss = loss/batch_scale
 
     # writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold),{'loss': loss.item()}, step)

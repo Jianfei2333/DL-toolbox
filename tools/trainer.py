@@ -88,10 +88,12 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
     y_pred = None
     y_true = None
     running_loss = 0.
+    count = 0
     for x, y in loader:
       x = x.to(device=device, dtype=torch.float)
       y = y.to(device=device, dtype=torch.long)
       scores = model(x)
+      count += y.shape[0]
 
       if criterion is not None:
         loss_weights = kwargs['loss_weights']
@@ -110,7 +112,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
 
-    running_loss = running_loss / loader.dataset.__len__()
+    running_loss = running_loss / count
 
     met_acc = accuracy(y_true, y_pred)
     met_confusion_matrix = cmatrix(y_true, y_pred, classes)
