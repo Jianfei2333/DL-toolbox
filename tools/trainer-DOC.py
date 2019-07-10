@@ -97,7 +97,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
 
       if criterion is not None:
         loss_weights = kwargs['loss_weights']
-        running_loss += criterion(scores, y, loss_weights).item()
+        running_loss += criterion(scores, y, np.where(np.array(classes) == 'UNKNOWN')[0][0], loss_weights).item()
 
       import importlib
       DOC = importlib.import_module('Loader.Loss.DOC')
