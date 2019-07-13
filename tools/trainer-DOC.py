@@ -139,7 +139,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       #     'Val Precision': met_precision_recall[classes[i]][0],
       #     'Val Recall': met_precision_reall[classes[i]][1]
       #   }, step)
-      writer.add_scalars('fold{}/Unknown', {
+      writer.add_scalars('fold{}/Unknown'.format(model.fold), {
         'Val Precision': met_precision_recall['UNKNOWN'][0],
         'Val Recall': met_precision_recall['UNKNOWN'][1]
       }, step)
