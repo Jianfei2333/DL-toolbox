@@ -139,6 +139,10 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       #     'Val Precision': met_precision_recall[classes[i]][0],
       #     'Val Recall': met_precision_reall[classes[i]][1]
       #   }, step)
+      writer.add_scalars('Aggregate/Unknown', {
+        'Val Precision': met_precision_recall['UNKNOWN'][0],
+        'Val Recall': met_precision_recall['UNKNOWN'][1]
+      }, step)
       if criterion is not None:
         writer.add_scalars('fold{}/Aggregate/Loss'.format(model.fold), {'Val Loss': running_loss}, step)
       writer.add_scalars('fold{}/Aggregate/Score'.format(model.fold), {'Val Score': met_balanced_acc_score}, step)
