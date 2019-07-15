@@ -122,7 +122,6 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
         g_scores = np.hstack((g_scores, scores.cpu().numpy()))
     
     if mode == 'train':
-      global threshold
       threshold = DOC.auto_threshold(y_true, g_scores, np.where(np.array(classes) == 'UNKNOWN')[0][0])
       print('Update thresholds to:', threshold)
 
