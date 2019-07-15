@@ -11,6 +11,7 @@ from config.dampconfig import damp
 import copy
 
 writer = writer()
+threshold = None
 
 def release(*argv):
   for v in argv:
@@ -87,6 +88,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
   with torch.no_grad():
     y_pred = None
     y_true = None
+    g_scores = None
     running_loss = 0.
     count = 0
     for x, y in loader:
@@ -101,7 +103,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
 
       import importlib
       DOC = importlib.import_module('Loader.Loss.DOC')
-      preds = DOC.prediction(scores, np.where(np.array(classes) == 'UNKNOWN')[0][0])
+      preds = DOC.prediction(scores, np.where(np.array(classes) == 'UNKNOWN')[0][0], t = threshold)
 
       # Prediction array
       if y_pred is None:
@@ -113,6 +115,16 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
         y_true = y.cpu().numpy()
       else:
         y_true = np.hstack((y_true, y.cpu().numpy()))
+
+      if g_scores is None:
+        g_scores = scores.cpu().numpy()
+      else:
+        g_scores = np.hstack((g_scores, scores.cpu().numpy()))
+    
+    if mode == 'train':
+      global threshold
+      threshold = DOC.auto_threshold(y_true, g_scores, np.where(np.array(classes) == 'UNKNOWN')[0][0])
+      print('Update thresholds to:', threshold)
 
     running_loss = running_loss / count
     met_acc = accuracy(y_true, y_pred)
@@ -243,8 +255,9 @@ def train_one_epoch(
   optimizer.zero_grad()
 
   model.step = step
-  
+  print('End of one epoch.')
   train_score = check(train4val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'train'})
+  res = check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'val'})
   
   if e % save_every == 0:
     filename = '{}epochs.pkl'.format(total_e)
