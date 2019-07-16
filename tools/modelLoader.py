@@ -21,7 +21,7 @@ def load(model):
     if hasattr(model, 'epochs'):
       epochs = model.epochs
       model_p.epochs = epochs
-    model_p = model_p.to(device='cpu')
+    model_p = model_p.to(device='cuda:{}'.format(ids[0]))
     # model_p = model_p.to(device='cuda:{}'.format(ids[0]))
   return model_p
 
