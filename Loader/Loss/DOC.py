@@ -43,7 +43,7 @@ def prediction(input, unknown_ind, t, weight=None):
     device = os.environ['device']
   else:
     device = os.environ['device'][:6]
-  if t in None:
+  if t is None:
     import numpy as np
     t = torch.from_numpy(np.repeat(0.5, input.shape[1]))
   predict = torch.where(values > t[indices], indices, torch.tensor([unknown_ind]).to(device=device))

@@ -6,8 +6,8 @@ sys.path.append('/home/huihui/Project/DL-toolbox/')
 import glob
 from tools import colorConstancy
 
-frompath = '/home/huihui/Data/ISIC2018/Data'
-topath = '/home/huihui/Data/ISIC2018_cc2/Data'
+frompath = '/home/huihui/Data/ISIC2019/Data'
+topath = '/home/huihui/Data/ISIC2019_resize2_cc/Data'
 
 def getClasses():
   return glob.glob(frompath+'/*')
@@ -62,6 +62,19 @@ def convert_resize_crop_cc(img):
   res = cv2.cvtColor(crop,cv2.COLOR_BGR2RGB)
   return colorConstancy.Grey_world(res)
 
+def convert_resize2_cc(img):
+  h, w, c = img.shape
+  scale = 500. / min(h, w)
+  new_h = int(h*scale)
+  new_w = int(w*scale)
+  # print (img.shape)
+  resize = cv2.resize(img, dsize=(new_w, new_h), interpolation=cv2.INTER_CUBIC)
+  # print(resize.shape)
+  # crop = resize[h_from:(h_from+500), w_from:(w_from+500)]
+  # print(crop.shape)
+  res = cv2.cvtColor(resize,cv2.COLOR_BGR2RGB)
+  return colorConstancy.Grey_world(res)
+
 def convert_resize_crop(img):
   """
   Resize with resolution holds -> Center Crop 500 * 500.
@@ -86,7 +99,7 @@ def saveImg(newImg, outpath):
 
 def main():
   classes = getClasses()
-  convert = convert_cc2
+  convert = convert_resize2_cc
   if not os.path.exists(topath):
     os.mkdir(topath)
   for i in range(len(classes)):
