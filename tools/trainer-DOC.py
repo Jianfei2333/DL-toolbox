@@ -69,6 +69,8 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
   Return:
     Nothing, but print the accuracy result to console.
   """
+  global threshold
+
   mode = kwargs['mode']
   if mode == 'val':
     print ('Checking accuracy on validation set.\n')
