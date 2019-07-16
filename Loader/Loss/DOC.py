@@ -45,7 +45,7 @@ def prediction(input, unknown_ind, t, weight=None):
     device = os.environ['device'][:6]
   if t is None:
     import numpy as np
-    t = torch.from_numpy(np.repeat(0.5, input.shape[1]))
+    t = torch.from_numpy(np.repeat(0.5, input.shape[1])).to(device=device)
   predict = torch.where(values > t[indices], indices, torch.tensor([unknown_ind]).to(device=device))
   return predict
 
@@ -63,4 +63,12 @@ def auto_threshold(y_true, scores, unknown_ind):
     s = torch.sum(torch.where(y_true == c, prob, torch.zeros_like(y_true)))
     std = (s / n).item()
     threshold[c] = max(0.5, 1 - 3 * std)
+  
+  if int(os.environ['gpus']) == 0:
+    device = 'cpu'
+  elif int(os.environ['gpus']) == 1:
+    device = os.environ['device']
+  else:
+    device = os.environ['device'][:6]
+  threshold = threshold.to(device=device)
   return threshold
