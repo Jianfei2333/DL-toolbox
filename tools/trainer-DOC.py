@@ -121,7 +121,7 @@ def check(loader, model, step, criterion=None, kwargs={'mode':'val'}):
       if g_scores is None:
         g_scores = scores.cpu().numpy()
       else:
-        g_scores = np.hstack((g_scores, scores.cpu().numpy()))
+        g_scores = np.vstack((g_scores, scores.cpu().numpy()))
     
     if mode == 'train':
       threshold = DOC.auto_threshold(y_true, g_scores, np.where(np.array(classes) == 'UNKNOWN')[0][0])
