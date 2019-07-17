@@ -22,3 +22,18 @@ def damp(optimizer, epoch):
       for g in optimizer.param_groups:
         g['lr'] = damper[epoch](g['lr'])
     return optimizer
+  if os.environ['damp'] == 'cosine':
+    damper = {
+      0: lambda x: x/5,
+      1: lambda x: x*2,
+      2: lambda x: x*(3/2),
+      3: lambda x: x*(4/3),
+      4: lambda x: x*(5/4),
+    }
+    import math
+    for i in range(6, 200):
+      damper[i] = lambda x: x * ((1+math.cos((i-5)*math.pi/195))/(1+math.cos((i-6)*math.pi/195)))
+    if epoch in damper.keys():
+      for g in optimizer.param_groups:
+        g['lr'] = damper[epoch](g['lr'])
+    return optimizer
