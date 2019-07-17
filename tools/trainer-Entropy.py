@@ -242,7 +242,7 @@ def train_one_epoch(
   optimizer.zero_grad()
 
   model.step = step
-  
+  check(val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'val'})
   train_score = check(train4val_dataloader, model, step, criterion, kwargs={'loss_weights':train_weights, 'mode': 'train'})
   
   if e % save_every == 0:
