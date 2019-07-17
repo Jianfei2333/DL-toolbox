@@ -63,7 +63,7 @@ def auto_threshold(y_true, scores, unknown_ind):
       continue
     n = torch.sum(torch.where(y_true == c, torch.ones_like(y_true), torch.zeros_like(y_true)))
     s = torch.sum(torch.where(y_true == c, prob, torch.zeros_like(y_true).type(torch.float)))
-    std = (s / n).item()
+    std = (s / n).item() ** 0.5
     threshold[c] = max(0.5, 1 - 3 * std)
   
   if int(os.environ['gpus']) == 0:
