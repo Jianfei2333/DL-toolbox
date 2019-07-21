@@ -44,6 +44,12 @@ def run(args, create=True):
     os.environ['tb-logdir'] = '/home/sysu_issjyin_2/jianfei/logs/'
     os.environ['logfile-dir'] = '/home/sysu_issjyin_2/jianfei/runlog/'
     os.environ['savepath'] = '/home/sysu_issjyin_2/jianfei/models/'
+  elif user.find('Labpc') != -1:
+    os.environ['where_am_i'] = 'labpc'
+    os.environ['datapath'] = '/data0/Data/'
+    os.environ['tb-logdir'] = '/home/huihui/Log/tensorboard-log/'
+    os.environ['logfile-dir'] = '/home/huihui/Log/runlog/'
+    os.environ['savepath'] = '/home/huihui/Models/'
   elif user.find('pc') == -1:
     os.environ['where_am_i'] = 'lab'
     if os.path.exists('/data0/jianfei/Data'):
