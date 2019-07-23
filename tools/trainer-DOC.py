@@ -301,13 +301,15 @@ def train(
   # Weights: The number of samples in each class.
   # Train_weights: 1/Weights, with normalization.
   weights = dataloader['train'].dataset.weights
-  train_weights = 1 / weights
-  s = np.sum(train_weights)
+  total = sum(weights)
+  train_weights = []
+  for w in weights:
+    train_weights.append((1/w)/(1/w + 1/(total-w)))
   device = os.environ['device']
   if int(os.environ['gpus']) > 1:
     device=device[:device.find(',')]
 
-  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
+  train_weights = torch.from_numpy(train_weights).to(device=device, dtype=torch.float32)
 
   info = {
       'since': since,
@@ -355,13 +357,15 @@ def train5folds(
   # Weights: The number of samples in each class.
   # Train_weights: 1/Weights, with normalization.
   weights = dataloaders[0]['train'].dataset.weights
-  train_weights = 1 / weights
-  s = np.sum(train_weights)
+  total = sum(weights)
+  train_weights = []
+  for w in weights:
+    train_weights.append((1/w)/(1/w + 1/(total-w)))
   device = os.environ['device']
   if int(os.environ['gpus']) > 1:
     device=device[:device.find(',')]
 
-  train_weights = torch.from_numpy(train_weights / s).to(device=device, dtype=torch.float32)
+  train_weights = torch.from_numpy(train_weights).to(device=device, dtype=torch.float32)
 
   info = [None, None, None, None, None]
   for i in range(5):
