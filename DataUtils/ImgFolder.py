@@ -9,7 +9,7 @@ import torch
 import torchvision.transforms as T
 import torchvision.datasets as dset
 
-datapath = os.environ['datapath'].replace('ISIC2018-openset', 'ILSVRC2012-val')
+datapath = os.environ['datapath'].replace('ISIC2018-openset', 'support')
 
 def getdata(transform={'train':None, 'val':None}, kwargs={'num_workers': 20, 'pin_memory': True}):
 

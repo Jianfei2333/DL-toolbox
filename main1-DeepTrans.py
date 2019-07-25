@@ -25,7 +25,7 @@ import torch.optim as optim
 # 下面开始进行主干内容
 from tools import datainfo
 info = datainfo.getdatainfo(os.environ['datapath'])
-info_reference = datainfo.getdatainfo(os.environ['datapath'].replace(args['data'], 'ILSVRC2012-val'))
+info_reference = datainfo.getdatainfo(os.environ['datapath'].replace(args['data'], 'support'))
 
 models, params, modelinfo1 = model.load(info, args['continue'])
 model1 = models[0]

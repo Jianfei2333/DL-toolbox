@@ -13,7 +13,7 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args, False)
 
-os.environ['datapath'] = '/data0/Data/ISIC2018-expand/Train/'
+os.environ['datapath'] = '/data0/Data/support/'
 
 from DataUtils import ImgFolder as data
 imgsize = (600, 450)
