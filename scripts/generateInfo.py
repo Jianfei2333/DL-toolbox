@@ -13,10 +13,10 @@ args = vars(globalparser.getparser().parse_args())
 from config import globalconfig
 globalconfig.run(args, False)
 
-os.environ['datapath'] = '/home/huihui/Data/ISIC2018_cc2/'
+os.environ['datapath'] = '/data0/Data/ISIC2018-expand/Train/'
 
-from DataUtils import ImgFolder_5fold as data
-imgsize = (500, 500)
+from DataUtils import ImgFolder as data
+imgsize = (600, 450)
 # imgcount = 10015
 
 dataloader = data.getdata({'train': T.ToTensor(), 'val': None})
@@ -25,25 +25,6 @@ dset = dataloader[0]['train'].dataset
 
 imgcount = dset.__len__()
 print ('Length: {}'.format(dset.__len__()))
-
-"""
-ISIC2018:
-  mean = [0.76352127,0.54612797,0.57053038]
-  var = [0.01994079,0.02337621,0.02901369]
-  std = [0.14121186,0.15289281,0.17033405]
-ISIC2018_with_Color_Constancy:
-  mean = [0.62488488,0.62468347,0.62499634]
-  var = [0.01315181,0.02681948,0.02968089]
-  std = [0.11468134,0.16376653,0.17228143]
-ISIC2019_resize
-  mean = [0.5722533, 0.57208944, 0.57222467]
-  var = [0.0363115, 0.04595451, 0.05087139]
-  std = [0.19055578, 0.21437002, 0.22554687]
-ISIC2019_resize_crop
-  mean = [0.56935831, 0.56919221, 0.56929657]
-  var = [0.03586197, 0.04661301, 0.05185368]
-  std = [0.18937256, 0.21590046, 0.22771403]
-"""
 
 def computeMean():
   pixels = imgsize[0] * imgsize[1] * imgcount

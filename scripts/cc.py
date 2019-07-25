@@ -6,8 +6,8 @@ sys.path.append('/home/huihui/Project/DL-toolbox/')
 import glob
 from tools import colorConstancy
 
-frompath = '/home/huihui/Data/ISIC2019/Data'
-topath = '/home/huihui/Data/ISIC2019_resize2_cc/Data'
+frompath = '/data0/SD-198/images'
+topath = '/data0/SD-198/Data'
 
 def getClasses():
   return glob.glob(frompath+'/*')
@@ -99,7 +99,7 @@ def saveImg(newImg, outpath):
 
 def main():
   classes = getClasses()
-  convert = convert_resize2_cc
+  convert = convert_resize_cc
   if not os.path.exists(topath):
     os.mkdir(topath)
   for i in range(len(classes)):

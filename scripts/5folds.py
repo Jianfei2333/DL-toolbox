@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import glob
 
 
 # * * * * * * * * *
@@ -8,7 +9,7 @@ import os
 # datapath
 #   - groundtruth.csv
 # * * * * * * * * *
-datapath = '/home/huihui/Data/ISIC2018_openset'
+datapath = '/data0/ilsvrc12/ILSVRC2012-val'
 
 def toimagefolder():
   """
@@ -65,4 +66,24 @@ def get5folds():
   # np.save('/home/huihui/Data/ISIC2018/validation.npy', validation)
   # np.save('/home/huihui/Data/ISIC2018/train.npy', train)
 
-get5folds()
+def onehot2imgfolder():
+  dist = datapath+'/Data'
+  if not os.path.exists(dist):
+    os.mkdir(dist)
+  imgs = glob.glob(datapath+'/*.JPEG')
+  imgs = sorted(imgs)
+  print(imgs)
+  with open(datapath+ '/groundtruth.txt', 'r') as f:
+    class_list = f.readlines()
+    class_list = [int(x.strip()) for x in class_list]
+    count = 0
+    for c in class_list:
+      class_dist = '{}/{}'.format(dist, c)
+      if not os.path.exists(class_dist):
+        os.mkdir(class_dist)
+      command = "mv {} {}".format(imgs[count], class_dist)
+      os.system(command)
+      print ("Finish move {}!".format(imgs[count]))
+      count += 1
+
+onehot2imgfolder()
